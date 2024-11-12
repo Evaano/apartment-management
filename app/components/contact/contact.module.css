@@ -1,0 +1,73 @@
+.wrapper {
+  min-height: rem(400px);
+  margin-top: calc(var(--mantine-spacing-sm) * 9.5);
+  border-radius: var(--mantine-radius-md);
+  background-color: var(--mantine-color-hospital-blue-7);
+  padding: calc(var(--mantine-spacing-xl) * 2.5);
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    padding: calc(var(--mantine-spacing-xl) * 1.5);
+    margin-top: calc(var(--mantine-spacing-sm) * 2.5);
+  }
+}
+
+.title {
+  font-family:
+    Greycliff CF,
+    var(--mantine-font-family);
+  color: var(--mantine-color-white);
+  line-height: 1;
+
+  @mixin dark {
+    color: var(--mantine-color-dark-6);
+  }
+
+  @mixin light {
+    color: var(--mantine-color-white);
+  }
+}
+
+.description {
+  color: var(--mantine-color-blue-0);
+  max-width: rem(300px);
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    max-width: 100%;
+  }
+
+  @mixin dark {
+    color: var(--mantine-color-dark-6);
+  }
+
+  @mixin light {
+    color: var(--mantine-color-white);
+  }
+}
+
+.form {
+  padding: var(--mantine-spacing-xl);
+  border-radius: var(--mantine-radius-md);
+  box-shadow: var(--mantine-shadow-lg);
+
+  @mixin dark {
+    background-color: var(--mantine-color-dark-6);
+  }
+
+  @mixin light {
+    background-color: var(--mantine-color-white);
+  }
+}
+
+.input {
+  @mixin dark {
+    color: var(--mantine-color-white);
+  }
+
+  @mixin light {
+    color: var(--mantine-color-dark-6);
+  }
+
+  &::placeholder {
+    color: var(--mantine-color-gray-5);
+  }
+}

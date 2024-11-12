@@ -1,0 +1,36 @@
+.wrapper {
+    display: flex;
+    align-items: center;
+    @mixin dark {
+        color: var(--mantine-color-dark-6);
+    }
+
+    @mixin light {
+        color: var(--mantine-color-white);
+    }
+}
+
+.icon {
+    margin-right: var(--mantine-spacing-md);
+    background-color: transparent;
+}
+
+.title {
+    @mixin dark {
+        color: var(--mantine-color-dark-6);
+    }
+
+    @mixin light {
+        color: var(--mantine-color-white);
+    }
+}
+
+.description {
+    @mixin dark {
+        color: var(--mantine-color-dark-6);
+    }
+
+    @mixin light {
+        color: var(--mantine-color-white);
+    }
+}

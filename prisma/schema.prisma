@@ -1,0 +1,88 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id              String          @id @default(cuid())
+  email           String          @unique
+  name            String
+  roleId          String
+  role            Role            @relation(fields: [roleId], references: [id])
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  deletedAt       DateTime?
+  familyMembers   FamilyMember[]
+  waitlistEntries WaitlistEntry[]
+}
+
+model Role {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  users       User[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id    String           @id @default(cuid())
+  name  String           @unique
+  roles RolePermission[]
+}
+
+model RolePermission {
+  role         Role       @relation(fields: [roleId], references: [id])
+  roleId       String
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  permissionId String
+
+  @@id([roleId, permissionId])
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  action    String
+  person    String
+  createdAt DateTime @default(now())
+}
+
+model Doctor {
+  id              String          @id @default(cuid())
+  name            String
+  designation     String
+  waitlistEntries WaitlistEntry[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  deletedAt       DateTime?
+}
+
+model FamilyMember {
+  id              String          @id @default(cuid())
+  name            String
+  relation        String
+  nationalId      String
+  user            User            @relation(fields: [userId], references: [id])
+  userId          String
+  waitlistEntries WaitlistEntry[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  deletedAt       DateTime?
+}
+
+model WaitlistEntry {
+  id             String        @id @default(cuid())
+  user           User          @relation(fields: [userId], references: [id])
+  userId         String
+  doctor         Doctor        @relation(fields: [doctorId], references: [id])
+  doctorId       String
+  familyMember   FamilyMember? @relation(fields: [familyMemberId], references: [id])
+  familyMemberId String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
+  isForSelf      Boolean       @default(false)
+  completed      Boolean       @default(false)
+}
