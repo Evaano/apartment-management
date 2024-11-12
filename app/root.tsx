@@ -21,7 +21,7 @@ import { getUser } from "~/session.server";
 import { Layout } from "~/components/layout/layout";
 
 const theme = createTheme({
-  fontFamily: "Open Sans, sans-serif",
+  fontFamily: "Segoe UI, sans-serif",
   primaryColor: "hospital-green",
   colors: {
     "hospital-green": [

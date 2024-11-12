@@ -8,16 +8,23 @@ generator client {
 }
 
 model User {
-  id              String          @id @default(cuid())
-  email           String          @unique
-  name            String
-  roleId          String
-  role            Role            @relation(fields: [roleId], references: [id])
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  deletedAt       DateTime?
-  familyMembers   FamilyMember[]
-  waitlistEntries WaitlistEntry[]
+  id        String    @id @default(cuid())
+  email     String    @unique
+  name      String
+  mobile    String
+  roleId    String
+  role      Role      @relation(fields: [roleId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  password  Password?
+}
+
+model Password {
+  hash String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
 }
 
 model Role {
@@ -47,42 +54,4 @@ model AuditLog {
   action    String
   person    String
   createdAt DateTime @default(now())
-}
-
-model Doctor {
-  id              String          @id @default(cuid())
-  name            String
-  designation     String
-  waitlistEntries WaitlistEntry[]
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  deletedAt       DateTime?
-}
-
-model FamilyMember {
-  id              String          @id @default(cuid())
-  name            String
-  relation        String
-  nationalId      String
-  user            User            @relation(fields: [userId], references: [id])
-  userId          String
-  waitlistEntries WaitlistEntry[]
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  deletedAt       DateTime?
-}
-
-model WaitlistEntry {
-  id             String        @id @default(cuid())
-  user           User          @relation(fields: [userId], references: [id])
-  userId         String
-  doctor         Doctor        @relation(fields: [doctorId], references: [id])
-  doctorId       String
-  familyMember   FamilyMember? @relation(fields: [familyMemberId], references: [id])
-  familyMemberId String?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  deletedAt      DateTime?
-  isForSelf      Boolean       @default(false)
-  completed      Boolean       @default(false)
 }

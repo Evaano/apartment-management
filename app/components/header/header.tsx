@@ -172,17 +172,7 @@ export function Header() {
               </Menu.Dropdown>
             </Menu>
           ) : (
-            <UnstyledButton
-              component={Link}
-              to="/login"
-              className={classes.loginButton}
-            >
-              <Group gap={7}>
-                <Button variant="filled" radius="xl">
-                  Login
-                </Button>{" "}
-              </Group>
-            </UnstyledButton>
+            <></>
           )}
         </div>
       </Container>

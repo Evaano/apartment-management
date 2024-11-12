@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -11,9 +12,6 @@ const prisma = new PrismaClient();
 
 async function seed() {
   // Cleanup existing data
-  await prisma.waitlistEntry.deleteMany();
-  await prisma.familyMember.deleteMany();
-  await prisma.doctor.deleteMany();
   await prisma.user.deleteMany();
   await prisma.rolePermission.deleteMany();
   await prisma.permission.deleteMany();
@@ -66,156 +64,34 @@ async function seed() {
   });
 
   // Create test users
-  const users = [{ email: "evaan.ibrahim", roleId: adminRole.id }];
+  const users = [
+    {
+      email: "evaan.ibrahim",
+      roleId: adminRole.id,
+      mobile: "9190402",
+      password: "test@123",
+      username: "Evaan Rasheed",
+    },
+  ];
 
-  const createdUsers = await Promise.all(
-    users.map(({ email, roleId }) =>
-      prisma.user.create({
+  await Promise.all(
+    users.map(async ({ email, roleId, mobile, password, username }) => {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      return prisma.user.create({
         data: {
           email,
+          mobile,
+          password: {
+            create: {
+              hash: hashedPassword,
+            },
+          },
           roleId,
-          name: "Evaan Rasheed",
+          name: username,
         },
-      }),
-    ),
+      });
+    }),
   );
-
-  // Create doctors
-  const doctors = [
-    { name: "Dr. Smith", designation: "Cardiologist" },
-    { name: "Dr. Johnson", designation: "Pediatrician" },
-    { name: "Dr. Williams", designation: "Dermatologist" },
-    { name: "Dr. Brown", designation: "Orthopedic Surgeon" },
-    { name: "Dr. Davis", designation: "Neurologist" },
-    { name: "Dr. Miller", designation: "Gastroenterologist" },
-    { name: "Dr. Wilson", designation: "Endocrinologist" },
-    { name: "Dr. Taylor", designation: "Oncologist" },
-    { name: "Dr. Anderson", designation: "General Practitioner" },
-  ];
-
-  const createdDoctors = await Promise.all(
-    doctors.map((doc) => prisma.doctor.create({ data: doc })),
-  );
-
-  // Create family members
-  const familyMembers = [
-    {
-      name: "John Doe",
-      relation: "father",
-      nationalId: "A200000",
-      userId: createdUsers[0].id,
-    },
-    {
-      name: "Jane Doe",
-      relation: "mother",
-      nationalId: "A220000",
-      userId: createdUsers[0].id,
-    },
-    {
-      name: "John Doe",
-      relation: "father",
-      nationalId: "A200000",
-      userId: createdUsers[0].id,
-    },
-    {
-      name: "Jane Doe",
-      relation: "mother",
-      nationalId: "A220000",
-      userId: createdUsers[0].id,
-    },
-    {
-      name: "John Doe",
-      relation: "father",
-      nationalId: "A200000",
-      userId: createdUsers[0].id,
-    },
-    {
-      name: "Jane Doe",
-      relation: "mother",
-      nationalId: "A220000",
-      userId: createdUsers[0].id,
-    },
-    {
-      name: "John Doe",
-      relation: "father",
-      nationalId: "A200000",
-      userId: createdUsers[0].id,
-    },
-    {
-      name: "Jane Doe",
-      relation: "mother",
-      nationalId: "A220000",
-      userId: createdUsers[0].id,
-    },
-    {
-      name: "John Doe",
-      relation: "father",
-      nationalId: "A200000",
-      userId: createdUsers[0].id,
-    },
-    {
-      name: "Jane Doe",
-      relation: "mother",
-      nationalId: "A220000",
-      userId: createdUsers[0].id,
-    },
-    {
-      name: "John Doe",
-      relation: "father",
-      nationalId: "A200000",
-      userId: createdUsers[0].id,
-    },
-    {
-      name: "Jane Doe",
-      relation: "mother",
-      nationalId: "A220000",
-      userId: createdUsers[0].id,
-    },
-    {
-      name: "John Doe",
-      relation: "father",
-      nationalId: "A200000",
-      userId: createdUsers[0].id,
-    },
-    {
-      name: "Jane Doe",
-      relation: "mother",
-      nationalId: "A220000",
-      userId: createdUsers[0].id,
-    },
-    {
-      name: "John Doe",
-      relation: "father",
-      nationalId: "A200000",
-      userId: createdUsers[0].id,
-    },
-    {
-      name: "Jane Doe",
-      relation: "mother",
-      nationalId: "A220000",
-      userId: createdUsers[0].id,
-    },
-  ];
-  const createdFamilyMembers = await Promise.all(
-    familyMembers.map((member) => prisma.familyMember.create({ data: member })),
-  );
-
-  // Create waitlist entries
-  await prisma.waitlistEntry.createMany({
-    data: [
-      {
-        userId: createdUsers[0].id,
-        doctorId: createdDoctors[0].id,
-        isForSelf: true,
-      },
-      {
-        userId: createdUsers[0].id,
-        doctorId: createdDoctors[1].id,
-        familyMemberId: createdFamilyMembers[0].id,
-        isForSelf: false,
-      },
-    ],
-  });
 
   // Create audit logs
   const auditLogs = [

@@ -1,4 +1,12 @@
-import { Button, Container, Flex, Paper, TextInput } from "@mantine/core";
+import {
+  Button,
+  Checkbox,
+  Container,
+  Flex,
+  Paper,
+  TextInput,
+  Text,
+} from "@mantine/core";
 import type {
   ActionFunction,
   LoaderFunctionArgs,
@@ -9,7 +17,7 @@ import { Form, useActionData, useSearchParams } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import { z } from "zod";
 
-import { createUser, getUserByEmail } from "~/models/user.server";
+import { verifyLogin } from "~/models/user.server";
 import { createUserSession, getUserId } from "~/session.server";
 
 export const meta: MetaFunction = () => [{ title: "Login" }];
@@ -45,52 +53,13 @@ export const action: ActionFunction = async ({ request }) => {
 
   const validatedData = validatedForm.data;
 
-  // AD Authentication
-  const loginFormData = new FormData();
-  loginFormData.append("username", validatedData.email);
-  loginFormData.append("password", validatedData.password);
-
-  const response = await fetch(`${process.env.API_URL}`, {
-    method: "POST",
-    body: loginFormData,
-  });
-
-  if (!response.ok) {
-    return json(
-      { errors: { email: "Invalid username or password", password: null } },
-      { status: 400 },
-    );
-  }
-
-  const data = await response.json();
-
-  if (!data.status && data.is_aduser) {
-    return json(
-      { errors: { email: "Username and password incorrect", password: null } },
-      { status: 400 },
-    );
-  } else if (!data.status && !data.is_aduser) {
-    return json(
-      { errors: { email: "Username and password incorrect", password: null } },
-      { status: 400 },
-    );
-  }
-
-  // Check if user exists in the local database
-  let user = await getUserByEmail(validatedData.email);
+  const user = await verifyLogin(validatedData.email, validatedData.password);
 
   if (!user) {
-    const username = JSON.parse(data.data).fullname;
-    user = await createUser(validatedData.email, username);
-  }
-
-  if (!user) {
-    return json(
-      {
-        errors: { email: "Failed to create or retrieve user", password: null },
-      },
-      { status: 500 },
-    );
+    throw new Response(null, {
+      status: 404,
+      statusText: "User Not Found",
+    });
   }
 
   return createUserSession({
@@ -159,15 +128,12 @@ export default function LoginPage() {
             >
               <Button type="submit">Log in</Button>
               <div style={{ display: "flex", alignItems: "center" }}>
-                <input
+                <Checkbox
                   id="remember"
                   name="remember"
-                  type="checkbox"
                   style={{ marginRight: 8 }}
                 />
-                <label htmlFor="remember" style={{ color: "#04a7df" }}>
-                  Remember me
-                </label>
+                <Text>Remember me</Text>
               </div>
             </Flex>
           </Flex>
