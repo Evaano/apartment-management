@@ -6,13 +6,14 @@ import { Footer } from "~/components/footer/footer";
 
 interface LayoutProps {
   children: ReactNode;
+  isAdmin: boolean;
 }
 
-export function Layout({ children }: LayoutProps) {
+export function Layout({ children, isAdmin }: LayoutProps) {
   return (
     <AppShell>
       <AppShell.Header>
-        <Header />
+        <Header isAdmin={isAdmin} />
       </AppShell.Header>
       <main
         style={{

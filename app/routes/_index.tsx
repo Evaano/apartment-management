@@ -22,7 +22,9 @@ export default function Index() {
       <AspectRatio ratio={16 / 9} maw={1920} mx="auto" mt={"lg"}>
         <BackgroundImage src="https://i.imgur.com/uVvSIHU.jpeg" radius="lg">
           <Box m={"xl"} p={"xl"}>
-            <Title className={classes.title}>HMH Waitlist Application</Title>
+            <Title className={classes.title}>
+              Apartment Management System (AMS)
+            </Title>
             <Text className={classes.description} size="xl" mt="xl">
               Easily manage your waitlist status and that of your immediate
               family members. Our application provides a seamless way for

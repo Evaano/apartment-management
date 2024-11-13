@@ -9,11 +9,11 @@ import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
 
 import { getUser } from "~/session.server";
@@ -22,31 +22,19 @@ import { Layout } from "~/components/layout/layout";
 
 const theme = createTheme({
   fontFamily: "Segoe UI, sans-serif",
-  primaryColor: "hospital-green",
+  primaryColor: "idk-pink",
   colors: {
-    "hospital-green": [
-      "#f1faea",
-      "#e4f1db",
-      "#c8e2b8",
-      "#abd292",
-      "#91c572",
-      "#81bc5d",
-      "#78b851",
-      "#66a241",
-      "#588f38",
-      "#4a7c2b",
-    ],
-    "hospital-blue": [
-      "#e1fcff",
-      "#ccf3ff",
-      "#9de5fd",
-      "#6ad6fb",
-      "#44c9f9",
-      "#2ec2f9",
-      "#1dbefa",
-      "#04a7df",
-      "#0094c8",
-      "#0080b1",
+    "idk-pink": [
+      "#ffe9f2",
+      "#ffd0e0",
+      "#fb9fbe",
+      "#f86b99",
+      "#f5407b",
+      "#f42667",
+      "#f5175d",
+      "#da094e",
+      "#c30044",
+      "#ac003a",
     ],
   },
 });
@@ -56,10 +44,15 @@ export const meta: MetaFunction = ({ error }) => {
 };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  return json({ user: await getUser(request) });
+  const user = await getUser(request);
+  const isAdmin = user?.roleId === process.env.ADMIN_ROLE_ID;
+
+  return json({ user, isAdmin });
 };
 
 export default function App() {
+  const { user, isAdmin } = useLoaderData<typeof loader>();
+
   return (
     <html lang="en" className="h-full">
       <head>
@@ -74,7 +67,7 @@ export default function App() {
         <MantineProvider theme={theme} defaultColorScheme={"light"}>
           <ModalsProvider>
             <Notifications />
-            <Layout>
+            <Layout isAdmin={isAdmin}>
               <Outlet />
             </Layout>
             <ScrollRestoration />

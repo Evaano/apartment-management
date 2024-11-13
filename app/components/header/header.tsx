@@ -6,11 +6,8 @@ import {
   Text,
   Menu,
   rem,
-  useMantineTheme,
   Box,
-  Center,
   Image,
-  Button,
 } from "@mantine/core";
 import { Link } from "@remix-run/react";
 import { IconLogout, IconSettings, IconChevronDown } from "@tabler/icons-react";
@@ -20,75 +17,34 @@ import { useOptionalUser } from "~/utils";
 
 import classes from "./header.module.css";
 
-const links = [
-  { link: "/doctors/list", label: "Home" },
-  { link: "/user/family", label: "Add Immediate Family" },
-  {
-    link: "#2",
-    label: "Management",
-    links: [
-      { link: "/doctors/add", label: "Add Doctor" },
-      { link: "/audit-log", label: "Audit Logs" },
-    ],
-  },
-  { link: "/contact", label: "Contact Us" },
-];
+interface HeaderProps {
+  isAdmin: boolean;
+}
 
-export function Header() {
+export function Header({ isAdmin }: HeaderProps) {
   const user = useOptionalUser();
-  const theme = useMantineTheme();
   const [, setUserMenuOpened] = useState(false);
 
-  // Conditionally render nav items based on user presence
-  const items = user
-    ? links.map((link) => {
-        const menuItems = link.links?.map((item) => (
-          <Menu.Item key={item.link}>
-            <Link to={item.link} className={classes.link}>
-              {item.label}
-            </Link>
-          </Menu.Item>
-        ));
+  const links = isAdmin
+    ? [
+        { link: "/", label: "Dashboard" },
+        { link: "/", label: "Tenants" },
+        { link: "/", label: "Finances" },
+        { link: "/", label: "Reports" },
+        { link: "/", label: "Maintenance" },
+      ]
+    : [
+        { link: "/", label: "Dashboard" },
+        { link: "/", label: "Rent Payment" },
+        { link: "/", label: "Lease Info" },
+        { link: "/", label: "Maintenance" },
+      ];
 
-        if (menuItems) {
-          return (
-            <Menu
-              key={link.label}
-              trigger="hover"
-              transitionProps={{ exitDuration: 0 }}
-              withinPortal
-              radius={"md"}
-            >
-              <Menu.Target>
-                <a
-                  href={link.link}
-                  className={classes.link}
-                  onClick={(event) => event.preventDefault()}
-                >
-                  <Center>
-                    <span className={classes.linkLabel}>{link.label}</span>
-                    <IconChevronDown size="0.9rem" stroke={1.5} />
-                  </Center>
-                </a>
-              </Menu.Target>
-              <Menu.Dropdown>{menuItems}</Menu.Dropdown>
-            </Menu>
-          );
-        }
-
-        return (
-          <Link key={link.label} to={link.link} className={classes.link}>
-            {link.label}
-          </Link>
-        );
-      })
-    : links
-        .filter((link) => link.label === "Home" || link.label === "Contact Us")
-        .map((link) => (
-          <Link key={link.label} to={link.link} className={classes.link}>
-            {link.label}
-          </Link>
-        ));
+  const items = links.map((link) => (
+    <Link key={link.label} to={link.link} className={classes.link}>
+      {link.label}
+    </Link>
+  ));
 
   const handleLogout = async () => {
     const response = await fetch("/logout", { method: "POST" });
