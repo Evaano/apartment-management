@@ -23,7 +23,7 @@ export default function Index() {
         <BackgroundImage src="https://i.imgur.com/uVvSIHU.jpeg" radius="lg">
           <Box m={"xl"} p={"xl"}>
             <Title className={classes.title}>
-              Apartment Management System (AMS)
+              Jifuti (Apartment Management System)
             </Title>
             <Text className={classes.description} size="xl" mt="xl">
               Easily manage your waitlist status and that of your immediate

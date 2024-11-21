@@ -2,13 +2,11 @@ import {
   Badge,
   Card,
   Container,
-  Divider,
   Flex,
   Group,
   Pagination,
   Paper,
   Text,
-  Title,
 } from "@mantine/core";
 import {
   LoaderFunctionArgs,

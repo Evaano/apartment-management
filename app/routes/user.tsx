@@ -20,9 +20,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return { userId };
 };
 
-export default function UserProfile() {
+export default function UserProfile(isAdmin: boolean) {
   return (
-    <Layout>
+    <Layout isAdmin={isAdmin}>
       <Outlet />
     </Layout>
   );

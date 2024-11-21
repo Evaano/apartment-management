@@ -1,4 +1,4 @@
-import { Text, Avatar, Paper, Button } from "@mantine/core";
+import { Text, Avatar, Paper, Button, Flex } from "@mantine/core";
 import { LoaderFunctionArgs, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { getUserById } from "~/models/user.server";
@@ -24,21 +24,23 @@ export default function UserProfileView() {
   const { user } = useLoaderData<typeof loader>();
 
   return (
-    <div>
-      <Paper radius="md" withBorder p="lg" bg="var(--mantine-color-body)">
-        <Avatar
-          src="https://imgur.com/LseGV35"
-          size={120}
-          radius={120}
-          mx="auto"
-        />
-        <Text ta="center" fz="lg" fw={500} mt="md">
-          {user.email}
-        </Text>
-        <div className="flex justify-center mt-3">
-          <Button disabled>Edit Profile</Button>
-        </div>
-      </Paper>
-    </div>
+    <Paper radius="md" withBorder p="lg" bg="var(--mantine-color-body)">
+      <Avatar
+        src="https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-8.png"
+        size={120}
+        radius={120}
+        mx="auto"
+      />
+      <Text ta="center" fz="lg" fw={500} mt="md">
+        {user.name}
+      </Text>
+      <Text ta="center" c="dimmed" fz="sm">
+        {user.email}
+      </Text>
+
+      <Button variant="default" fullWidth mt="md">
+        Edit Profile
+      </Button>
+    </Paper>
   );
 }
