@@ -69,6 +69,13 @@ async function seed() {
       email: "evaan.ibrahim",
       roleId: adminRole.id,
       mobile: "9190402",
+      password: "Ele#2321!",
+      username: "Evaan Rasheed",
+    },
+    {
+      email: "evaan.test",
+      roleId: userRole.id,
+      mobile: "9190402",
       password: "test@123",
       username: "Evaan Rasheed",
     },

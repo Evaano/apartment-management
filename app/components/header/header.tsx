@@ -27,16 +27,16 @@ export function Header({ isAdmin }: HeaderProps) {
 
   const links = isAdmin
     ? [
-        { link: "/", label: "Dashboard" },
+        { link: "/tenants/dashboard", label: "Dashboard" },
+        { link: "/tenants/rent", label: "Rent Payment" },
+        { link: "/tenants/lease", label: "Lease Info" },
+        { link: "/tenants/maintenance", label: "Maintenance" },
+      ]
+    : [
+        { link: "/admin/dashboard", label: "Dashboard" },
         { link: "/", label: "Tenants" },
         { link: "/", label: "Finances" },
         { link: "/", label: "Reports" },
-        { link: "/", label: "Maintenance" },
-      ]
-    : [
-        { link: "/", label: "Dashboard" },
-        { link: "/", label: "Rent Payment" },
-        { link: "/", label: "Lease Info" },
         { link: "/", label: "Maintenance" },
       ];
 
@@ -105,6 +105,8 @@ export function Header({ isAdmin }: HeaderProps) {
               <Menu.Dropdown>
                 <Menu.Label>Settings</Menu.Label>
                 <Menu.Item
+                  component={Link}
+                  to={`/user/profile`}
                   leftSection={
                     <IconSettings
                       style={{ width: rem(16), height: rem(16) }}
