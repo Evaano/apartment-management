@@ -83,75 +83,63 @@ export default function TenantsDashboard({ isAdmin }: { isAdmin: boolean }) {
 
   return (
     <Container fluid p="md">
-      <ScrollArea
-        h={630}
-        offsetScrollbars
-        scrollbarSize={8}
-        scrollHideDelay={500}
-      >
-        <Grid>
-          <Grid.Col span={12}>
-            <Paper shadow="xs" p="md" withBorder>
-              <Title order={3}>Payment Details</Title>
-              <Flex direction="column" gap="md">
-                <Paper
-                  shadow="xs"
-                  p="md"
-                  mt={"md"}
-                  bg={dark ? "dark" : "gray.1"}
-                >
-                  <Flex direction="row" gap="md">
-                    <Text>Payment Amount:</Text>
-                    <Text>$1,200</Text>
-                  </Flex>
-                  <Flex direction="row" gap="md">
-                    <Text>Due Date:</Text>
-                    <Text>2024-12-01</Text>
-                  </Flex>
-                  <Flex direction="row" gap="md">
-                    <Text>Details:</Text>
-                    <Text>Rent payment for December 2024</Text>
-                  </Flex>
-                  <Flex>
-                    <Button mt="md">Pay Now</Button>
-                  </Flex>
-                </Paper>
-              </Flex>
-            </Paper>
-          </Grid.Col>
-          <Grid.Col span={12}>
-            <Paper shadow="xs" p="md" withBorder>
-              <Title order={3}>Payment Summary</Title>
-              <Flex direction="column" gap="md" mt={"md"}>
-                <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
-                  <Flex direction="row" justify="space-between">
-                    <Text>Rent Payment</Text>
-                    <Button variant="light" mt="md">
-                      Details
-                    </Button>
-                  </Flex>
-                </Paper>
-                <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
-                  <Flex direction="row" justify="space-between">
-                    <Text>Utility Payment</Text>
-                    <Button variant="light" mt="md">
-                      Details
-                    </Button>
-                  </Flex>
-                </Paper>
-                <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
-                  <Flex direction="row" justify="space-between">
-                    <Text>Late Fees</Text>
-                    <Button variant="light" mt="md">
-                      Details
-                    </Button>
-                  </Flex>
-                </Paper>
-              </Flex>
-            </Paper>
-          </Grid.Col>
-        </Grid>
-      </ScrollArea>
+      <Grid>
+        <Grid.Col span={12}>
+          <Paper shadow="xs" p="md" withBorder>
+            <Title order={3}>Payment Details</Title>
+            <Flex direction="column" gap="md">
+              <Paper shadow="xs" p="md" mt={"md"} bg={dark ? "dark" : "gray.1"}>
+                <Flex direction="row" gap="md">
+                  <Text>Payment Amount:</Text>
+                  <Text>$1,200</Text>
+                </Flex>
+                <Flex direction="row" gap="md">
+                  <Text>Due Date:</Text>
+                  <Text>2024-12-01</Text>
+                </Flex>
+                <Flex direction="row" gap="md">
+                  <Text>Details:</Text>
+                  <Text>Rent payment for December 2024</Text>
+                </Flex>
+                <Flex>
+                  <Button mt="md">Pay Now</Button>
+                </Flex>
+              </Paper>
+            </Flex>
+          </Paper>
+        </Grid.Col>
+        <Grid.Col span={12}>
+          <Paper shadow="xs" p="md" withBorder>
+            <Title order={3}>Payment Summary</Title>
+            <Flex direction="column" gap="md" mt={"md"}>
+              <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
+                <Flex direction="row" justify="space-between">
+                  <Text>Rent Payment</Text>
+                  <Button variant="light" mt="md">
+                    Details
+                  </Button>
+                </Flex>
+              </Paper>
+              <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
+                <Flex direction="row" justify="space-between">
+                  <Text>Utility Payment</Text>
+                  <Button variant="light" mt="md">
+                    Details
+                  </Button>
+                </Flex>
+              </Paper>
+              <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
+                <Flex direction="row" justify="space-between">
+                  <Text>Late Fees</Text>
+                  <Button variant="light" mt="md">
+                    Details
+                  </Button>
+                </Flex>
+              </Paper>
+            </Flex>
+          </Paper>
+        </Grid.Col>
+      </Grid>
     </Container>
   );
 }

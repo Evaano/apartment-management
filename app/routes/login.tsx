@@ -6,6 +6,7 @@ import {
   Paper,
   TextInput,
   Text,
+  Title,
 } from "@mantine/core";
 import type {
   ActionFunction,
@@ -13,7 +14,7 @@ import type {
   MetaFunction,
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, useActionData, useSearchParams } from "@remix-run/react";
+import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import { z } from "zod";
 
@@ -88,35 +89,32 @@ export default function LoginPage() {
   return (
     <Container size="xs" pt="xl" mt="xl">
       <Paper p="xl" shadow="xs" withBorder>
+        <Title order={1} mb="lg">
+          Login
+        </Title>
         <Form method="post" className="space-y-6">
           <Flex direction="column" align="center" gap="md">
             <TextInput
               ref={emailRef}
               id="email"
               name="email"
-              placeholder="Your Hmh username"
               label="Username"
               variant="filled"
               type="text"
               autoComplete="email"
               error={actionData?.errors?.email}
-              style={{
-                width: 450,
-              }}
+              w={{ md: 440, base: 260 }}
             />
             <TextInput
               ref={passwordRef}
               id="password"
               name="password"
               label="Password"
-              placeholder="Login Password"
               variant="filled"
               type="password"
               autoComplete="current-password"
               error={actionData?.errors?.password}
-              style={{
-                width: 450,
-              }}
+              w={{ md: 440, base: 260 }}
             />
             <input type="hidden" name="redirectTo" value={redirectTo} />
             <Flex
@@ -137,6 +135,18 @@ export default function LoginPage() {
               </div>
             </Flex>
           </Flex>
+          <Text size="sm" c="dimmed" pt={"md"}>
+            Dont have an account?{" "}
+            <Link
+              style={{ color: "var(--mantine-color-blue-filled)" }}
+              to={{
+                pathname: "/register",
+                search: searchParams.toString(),
+              }}
+            >
+              Register
+            </Link>
+          </Text>
         </Form>
       </Paper>
     </Container>

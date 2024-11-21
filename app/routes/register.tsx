@@ -16,6 +16,7 @@ import {
   Title,
   Text,
   Box,
+  Paper,
 } from "@mantine/core";
 
 import { createUser, getUserByEmail } from "~/models/user.server";
@@ -117,8 +118,8 @@ export default function Join() {
   }, [actionData]);
 
   return (
-    <Container size="xs">
-      <Box mt={50}>
+    <Container size="xs" pt={{ md: "xl", base: 0 }} mt="xl">
+      <Paper p="xl" shadow="xs" withBorder>
         <Title order={1} mb="lg">
           Register
         </Title>
@@ -187,7 +188,7 @@ export default function Join() {
             </Text>
           </Stack>
         </Form>
-      </Box>
+      </Paper>
     </Container>
   );
 }

@@ -8,10 +8,14 @@ import {
   rem,
   Box,
   Image,
+  Burger,
+  Drawer,
+  Stack,
 } from "@mantine/core";
 import { Link } from "@remix-run/react";
 import { IconLogout, IconSettings, IconChevronDown } from "@tabler/icons-react";
 import { useState } from "react";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 
 import { useOptionalUser } from "~/utils";
 
@@ -24,6 +28,9 @@ interface HeaderProps {
 export function Header({ isAdmin }: HeaderProps) {
   const user = useOptionalUser();
   const [, setUserMenuOpened] = useState(false);
+  const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
+    useDisclosure(false);
+  const isMobile = useMediaQuery("(max-width: 767px)");
 
   const links = isAdmin
     ? [
@@ -40,12 +47,6 @@ export function Header({ isAdmin }: HeaderProps) {
         { link: "/", label: "Maintenance" },
       ];
 
-  const items = links.map((link) => (
-    <Link key={link.label} to={link.link} className={classes.link}>
-      {link.label}
-    </Link>
-  ));
-
   const handleLogout = async () => {
     const response = await fetch("/logout", { method: "POST" });
     if (response.ok) {
@@ -54,6 +55,66 @@ export function Header({ isAdmin }: HeaderProps) {
       console.error("Logout failed");
     }
   };
+
+  const UserMenu = () => (
+    <Menu
+      width={260}
+      position="bottom-end"
+      radius={"md"}
+      transitionProps={{ transition: "pop-top-right" }}
+      onClose={() => setUserMenuOpened(false)}
+      onOpen={() => setUserMenuOpened(true)}
+      withinPortal
+    >
+      <Menu.Target>
+        <UnstyledButton>
+          <Group gap={7}>
+            <Avatar
+              src={
+                "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png"
+              }
+              alt={user?.email}
+              radius="xl"
+              size={20}
+            />
+            <Text fw={500} size="sm" lh={1} mr={3}>
+              {user?.email}
+            </Text>
+            <IconChevronDown
+              style={{ width: rem(12), height: rem(12) }}
+              stroke={1.5}
+            />
+          </Group>
+        </UnstyledButton>
+      </Menu.Target>
+      <Menu.Dropdown>
+        <Menu.Label>Settings</Menu.Label>
+        <Menu.Item
+          component={Link}
+          to={`/user/profile`}
+          leftSection={
+            <IconSettings
+              style={{ width: rem(16), height: rem(16) }}
+              stroke={1.5}
+            />
+          }
+        >
+          Account settings
+        </Menu.Item>
+        <Menu.Item
+          onClick={handleLogout}
+          leftSection={
+            <IconLogout
+              style={{ width: rem(16), height: rem(16) }}
+              stroke={1.5}
+            />
+          }
+        >
+          Logout
+        </Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
+  );
 
   return (
     <header className={classes.header}>
@@ -65,73 +126,88 @@ export function Header({ isAdmin }: HeaderProps) {
               h={60}
               w="auto"
               fit="contain"
-              src="https://imgur.com/fkVVyJO.png"
+              src="https://i.imgur.com/1DJjs0E.png"
             />
           </Box>
-          <Group gap={5} visibleFrom="sm">
-            {items}
-          </Group>
-          {user ? (
-            <Menu
-              width={260}
-              position="bottom-end"
-              radius={"md"}
-              transitionProps={{ transition: "pop-top-right" }}
-              onClose={() => setUserMenuOpened(false)}
-              onOpen={() => setUserMenuOpened(true)}
-              withinPortal
-            >
-              <Menu.Target>
-                <UnstyledButton>
-                  <Group gap={7}>
-                    <Avatar
-                      src={
-                        "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png"
-                      }
-                      alt={user?.email}
-                      radius="xl"
-                      size={20}
-                    />
-                    <Text fw={500} size="sm" lh={1} mr={3}>
-                      {user?.email}
-                    </Text>
-                    <IconChevronDown
-                      style={{ width: rem(12), height: rem(12) }}
-                      stroke={1.5}
-                    />
-                  </Group>
-                </UnstyledButton>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Label>Settings</Menu.Label>
-                <Menu.Item
-                  component={Link}
-                  to={`/user/profile`}
-                  leftSection={
-                    <IconSettings
-                      style={{ width: rem(16), height: rem(16) }}
-                      stroke={1.5}
-                    />
-                  }
-                >
-                  Account settings
-                </Menu.Item>
-                <Menu.Item
-                  onClick={handleLogout}
-                  leftSection={
-                    <IconLogout
-                      style={{ width: rem(16), height: rem(16) }}
-                      stroke={1.5}
-                    />
-                  }
-                >
-                  Logout
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
-          ) : (
-            <></>
+
+          {/* Desktop Navigation */}
+          {!isMobile && (
+            <Group gap={5}>
+              {links.map((link) => (
+                <Link key={link.label} to={link.link} className={classes.link}>
+                  {link.label}
+                </Link>
+              ))}
+            </Group>
           )}
+
+          {/* Mobile Hamburger */}
+
+          {isMobile && <Burger opened={drawerOpened} onClick={toggleDrawer} />}
+
+          {/* User Menu */}
+          {user && (isMobile ? null : <UserMenu />)}
+
+          {/* Mobile Navigation Drawer */}
+          <Drawer
+            opened={drawerOpened}
+            onClose={closeDrawer}
+            size="100%"
+            padding="md"
+            zIndex={1000000}
+          >
+            <Stack gap="xl" px={"lg"}>
+              {/* User Info for Mobile */}
+              {user && (
+                <Group>
+                  <Avatar
+                    src={
+                      "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png"
+                    }
+                    alt={user?.email}
+                    radius="xl"
+                    size={40}
+                  />
+                  <div>
+                    <Text fw={500}>{user?.email}</Text>
+                  </div>
+                </Group>
+              )}
+
+              {/* Mobile Navigation Links */}
+              {links.map((link) => (
+                <Link
+                  key={link.label}
+                  to={link.link}
+                  className={classes.link}
+                  onClick={closeDrawer}
+                >
+                  {link.label}
+                </Link>
+              ))}
+
+              {/* User Menu Items in Mobile Drawer */}
+              {user && isMobile && (
+                <>
+                  <Link
+                    to="/user/profile"
+                    className={classes.link}
+                    onClick={closeDrawer}
+                  >
+                    Account Settings
+                  </Link>
+                  <UnstyledButton
+                    onClick={() => {
+                      handleLogout().then(() => closeDrawer());
+                    }}
+                    className={classes.link}
+                  >
+                    Logout
+                  </UnstyledButton>
+                </>
+              )}
+            </Stack>
+          </Drawer>
         </div>
       </Container>
     </header>

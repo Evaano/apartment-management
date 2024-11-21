@@ -18,13 +18,14 @@ export function Layout({ children, isAdmin }: LayoutProps) {
       <main
         style={{
           paddingTop: "10px",
-          marginTop: "60px",
-          marginBottom: "40px",
+          marginTop: "50px",
+          paddingBottom: "10px",
+          marginBottom: "80px",
         }}
       >
         <Container size={"xl"}>{children}</Container>
       </main>
-      <AppShell.Footer p="md">
+      <AppShell.Footer>
         <Footer />
       </AppShell.Footer>
     </AppShell>

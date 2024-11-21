@@ -12,7 +12,9 @@ import {
   Text,
   Flex,
   useMantineColorScheme,
+  Stack,
 } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 
 export const meta: MetaFunction = () => [{ title: "User Management" }];
 
@@ -79,6 +81,128 @@ const LEASE_INFORMATION = {
 export default function TenantsDashboard({ isAdmin }: { isAdmin: boolean }) {
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
+  if (isMobile) {
+    return (
+      <Container fluid p="md">
+        <Flex gap="md" direction={isMobile ? "column" : "row"} wrap="wrap">
+          <Paper
+            shadow="xs"
+            p="md"
+            className={isMobile ? "w-full" : "w-72"}
+            bg={dark ? "dark" : "gray.1"}
+          >
+            <Stack gap="md">
+              <Title order={4}>Notifications</Title>
+              <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
+                {NOTIFICATIONS.map((notification, index) => (
+                  <Text key={index} className="mb-2">
+                    {notification}
+                  </Text>
+                ))}
+                <Button variant="light" fullWidth className="mt-4">
+                  View
+                </Button>
+              </Paper>
+            </Stack>
+          </Paper>
+
+          <Flex
+            direction="column"
+            gap="md"
+            className={isMobile ? "w-full" : "flex-1"}
+          >
+            {/* Payments Row */}
+            <Flex gap="md" direction={isMobile ? "column" : "row"}>
+              {/* Due Payments */}
+              <Paper
+                shadow="xs"
+                p="md"
+                className={isMobile ? "w-full" : "w-64"}
+                bg={dark ? "dark" : "gray.1"}
+              >
+                <Stack gap="md">
+                  <Title order={4}>Due Payments</Title>
+                  <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
+                    {DUE_PAYMENTS.map((payment) => (
+                      <Text key={payment.id} className="mb-2">
+                        {payment.details} - {payment.amount} (Due:{" "}
+                        {payment.dueDate})
+                      </Text>
+                    ))}
+                  </Paper>
+                  <Button fullWidth>Pay</Button>
+                </Stack>
+              </Paper>
+
+              <Paper
+                shadow="xs"
+                p="md"
+                className={isMobile ? "w-full" : "w-64"}
+                bg={dark ? "dark" : "gray.1"}
+              >
+                <Stack gap="md">
+                  <Title order={4}>Next Payment</Title>
+                  <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
+                    <Text>
+                      {NEXT_PAYMENT.details} - {NEXT_PAYMENT.amount}
+                      <br />
+                      Due: {NEXT_PAYMENT.dueDate}
+                    </Text>
+                  </Paper>
+                  <Button fullWidth>Pay</Button>
+                </Stack>
+              </Paper>
+            </Flex>
+
+            <Paper
+              shadow="xs"
+              p="md"
+              className="w-full"
+              bg={dark ? "dark" : "gray.1"}
+            >
+              <Stack gap="md">
+                <Title order={4}>Lease Info</Title>
+                <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
+                  <Stack gap="xs">
+                    <Text>Lease Number: {LEASE_INFORMATION.leaseNumber}</Text>
+                    <Text>
+                      Lease Term: {LEASE_INFORMATION.startDate} to{" "}
+                      {LEASE_INFORMATION.endDate}
+                    </Text>
+                    <Text>Monthly Rent: {LEASE_INFORMATION.monthlyRent}</Text>
+                    <Text>Landlord: {LEASE_INFORMATION.landlordName}</Text>
+                  </Stack>
+                </Paper>
+              </Stack>
+            </Paper>
+          </Flex>
+
+          <Paper
+            shadow="xs"
+            p="md"
+            className={isMobile ? "w-full" : "w-72"}
+            bg={dark ? "dark" : "gray.1"}
+          >
+            <Stack gap="md">
+              <Title order={4}>Maintenance Requests</Title>
+              <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
+                {MAINTENANCE_REQUESTS.map((request) => (
+                  <Text key={request.id} className="mb-2">
+                    {request.issue} - {request.status}
+                  </Text>
+                ))}
+                <Button variant="light" fullWidth className="mt-4">
+                  View
+                </Button>
+              </Paper>
+            </Stack>
+          </Paper>
+        </Flex>
+      </Container>
+    );
+  }
 
   return (
     <Container fluid p="md">

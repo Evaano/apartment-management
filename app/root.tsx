@@ -22,19 +22,19 @@ import { Layout } from "~/components/layout/layout";
 
 const theme = createTheme({
   fontFamily: "Segoe UI, sans-serif",
-  primaryColor: "idk-pink",
+  primaryColor: "primary-blue",
   colors: {
-    "idk-pink": [
-      "#ffe9f2",
-      "#ffd0e0",
-      "#fb9fbe",
-      "#f86b99",
-      "#f5407b",
-      "#f42667",
-      "#f5175d",
-      "#da094e",
-      "#c30044",
-      "#ac003a",
+    "primary-blue": [
+      "#eeeeff",
+      "#dadaf8",
+      "#b2b2ea",
+      "#8787dd",
+      "#6462d1",
+      "#4d4bcb",
+      "#4140c8",
+      "#3232b2",
+      "#2b2ca0",
+      "#21258e",
     ],
   },
 });
