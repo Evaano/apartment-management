@@ -1,8 +1,8 @@
 .header {
-    padding-top: 16px;
-    padding-bottom: 16px;
-    height: rem(90px);
+    padding-top: 12px;
+    padding-bottom: 12px;
     background-color: var(--mantine-color-body);
+    border-bottom: 1px solid var(--mantine-color-border);
 }
 
 .inner {

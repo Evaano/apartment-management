@@ -1,13 +1,15 @@
 .inner {
+    height: rem(56px);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: var(--mantine-spacing-xl);
-    padding-bottom: var(--mantine-spacing-xl);
 }
 
-.links {
-    @media (max-width: $mantine-breakpoint-xs) {
-        margin-top: var(--mantine-spacing-md);
-    }
+
+
+.footer {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background-color: var(--mantine-color-body);
+    border-top: 1px solid var(--mantine-color-border);
 }

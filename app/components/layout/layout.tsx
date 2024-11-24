@@ -1,30 +1,22 @@
-import { AppShell, Container, rem } from "@mantine/core";
-import { ReactNode } from "react";
-
+import { AppShell, Container, RemoveScroll } from "@mantine/core";
+import classes from "~/components/layout/layout.module.css";
 import { Header } from "~/components/header/header";
 import { Footer } from "~/components/footer/footer";
 
-interface LayoutProps {
-  children: ReactNode;
+interface ShellProps {
+  children: React.ReactNode;
   isAdmin: boolean;
 }
 
-export function Layout({ children, isAdmin }: LayoutProps) {
+export function Layout({ children, isAdmin }: ShellProps) {
   return (
-    <AppShell>
-      <AppShell.Header>
-        <Header isAdmin={isAdmin} />
+    <AppShell header={{ height: 81 }}>
+      <AppShell.Header className={RemoveScroll.classNames.zeroRight}>
+        <Container size="xl" px="md" className={classes.inner}>
+          <Header isAdmin={isAdmin} />
+        </Container>
       </AppShell.Header>
-      <main
-        style={{
-          paddingTop: "10px",
-          marginTop: "50px",
-          paddingBottom: "10px",
-          marginBottom: "80px",
-        }}
-      >
-        <Container size={"xl"}>{children}</Container>
-      </main>
+      <main>{children}</main>
       <AppShell.Footer>
         <Footer />
       </AppShell.Footer>

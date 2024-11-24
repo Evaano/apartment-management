@@ -1,10 +1,18 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { Outlet } from "@remix-run/react";
-
-import { Layout } from "~/components/layout/layout";
 import { requireUserId } from "~/session.server";
 import { safeRedirect } from "~/utils";
+
+import {
+  Button,
+  Grid,
+  Paper,
+  Text,
+  Title,
+  useMantineColorScheme,
+} from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
+import { MainContainer } from "~/components/main-container/main-container";
 
 export const meta: MetaFunction = () => [{ title: "User Management" }];
 
@@ -20,10 +28,171 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return { userId };
 };
 
-export default function AdminRoutes(isAdmin: boolean) {
+const NOTIFICATIONS = [
+  "Your rent payment is due in 5 days.",
+  "Maintenance request #1234 has been resolved.",
+  "Lease renewal is available starting next month.",
+];
+
+const NEXT_PAYMENT = {
+  amount: "$1,200",
+  dueDate: "2024-12-01",
+  details: "Rent payment for December 2024.",
+};
+
+const DUE_PAYMENTS = [
+  {
+    id: 1,
+    amount: "$1,200",
+    dueDate: "2024-11-25",
+    details: "Rent payment for November 2024.",
+  },
+  {
+    id: 2,
+    amount: "$100",
+    dueDate: "2024-11-20",
+    details: "Utility payment for October 2024.",
+  },
+];
+
+const MAINTENANCE_REQUESTS = [
+  {
+    id: 1,
+    issue: "Leaky faucet in kitchen",
+    status: "Pending",
+  },
+  {
+    id: 2,
+    issue: "Broken heater in living room",
+    status: "Resolved",
+  },
+];
+
+const LEASE_INFORMATION = {
+  leaseNumber: "LN-12345",
+  startDate: "2023-01-01",
+  endDate: "2025-12-31",
+  monthlyRent: "$1,200",
+  landlordName: "John Doe",
+};
+
+export default function TenantsDashboard({ isAdmin }: { isAdmin: boolean }) {
+  const { colorScheme } = useMantineColorScheme();
+  const dark = colorScheme === "dark";
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
   return (
-    <Layout isAdmin={isAdmin}>
-      <Outlet />
-    </Layout>
+    <MainContainer title="Dashboard">
+      <Grid gutter="md">
+        {/* Notifications Section */}
+        <Grid.Col span={{ base: 12, md: 3, lg: 3 }}>
+          <Paper shadow="xs" p="md" mih={600} bg={dark ? "dark" : "gray.1"}>
+            <Title order={4}>Notifications</Title>
+            <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
+              {NOTIFICATIONS.map((notification, index) => (
+                <Text key={index}>{notification}</Text>
+              ))}
+              <Button variant="light" fullWidth mt="md">
+                View
+              </Button>
+            </Paper>
+          </Paper>
+        </Grid.Col>
+
+        {/* Payments and Lease Info Section */}
+        <Grid.Col span={{ base: 12, md: 6, lg: 6 }}>
+          <Grid gutter="md">
+            {/* Due Payments */}
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Paper
+                shadow="xs"
+                p="md"
+                mih={300}
+                bg={dark ? "dark" : "gray.1"}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div>
+                  <Title order={4}>Due Payments</Title>
+                  <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
+                    {DUE_PAYMENTS.map((payment) => (
+                      <Text key={payment.id}>
+                        {payment.details} - {payment.amount} (Due:{" "}
+                        {payment.dueDate})
+                      </Text>
+                    ))}
+                  </Paper>
+                </div>
+                <Button fullWidth mt="md">
+                  Pay
+                </Button>
+              </Paper>
+            </Grid.Col>
+
+            {/* Next Payment */}
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Paper
+                shadow="xs"
+                p="md"
+                mih={300}
+                bg={dark ? "dark" : "gray.1"}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div>
+                  <Title order={4}>Next Payment</Title>
+                  <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
+                    {NEXT_PAYMENT.details} - {NEXT_PAYMENT.amount} (Due:{" "}
+                    {NEXT_PAYMENT.dueDate})
+                  </Paper>
+                </div>
+                <Button fullWidth mt="md">
+                  Pay
+                </Button>
+              </Paper>
+            </Grid.Col>
+
+            {/* Lease Info */}
+            <Grid.Col span={12}>
+              <Paper shadow="xs" p="md" mih={285} bg={dark ? "dark" : "gray.1"}>
+                <Title order={4}>Lease Info</Title>
+                <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
+                  <Text>Lease Number: {LEASE_INFORMATION.leaseNumber}</Text>
+                  <Text>
+                    Lease Term: {LEASE_INFORMATION.startDate} to{" "}
+                    {LEASE_INFORMATION.endDate}
+                  </Text>
+                  <Text>Monthly Rent: {LEASE_INFORMATION.monthlyRent}</Text>
+                  <Text>Landlord: {LEASE_INFORMATION.landlordName}</Text>
+                </Paper>
+              </Paper>
+            </Grid.Col>
+          </Grid>
+        </Grid.Col>
+
+        {/* Maintenance Requests Section */}
+        <Grid.Col span={{ base: 12, md: 3, lg: 3 }}>
+          <Paper shadow="xs" p="md" mih={600} bg={dark ? "dark" : "gray.1"}>
+            <Title order={4}>Maintenance Requests</Title>
+            <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
+              {MAINTENANCE_REQUESTS.map((request) => (
+                <Text key={request.id}>
+                  {request.issue} - {request.status}
+                </Text>
+              ))}
+              <Button variant="light" fullWidth mt="md">
+                View
+              </Button>
+            </Paper>
+          </Paper>
+        </Grid.Col>
+      </Grid>
+    </MainContainer>
   );
 }

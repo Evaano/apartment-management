@@ -1,19 +1,19 @@
 import {
-  Container,
   Avatar,
-  UnstyledButton,
+  Box,
+  Burger,
+  Container,
+  Drawer,
   Group,
-  Text,
+  Image,
   Menu,
   rem,
-  Box,
-  Image,
-  Burger,
-  Drawer,
   Stack,
+  Text,
+  UnstyledButton,
 } from "@mantine/core";
 import { Link } from "@remix-run/react";
-import { IconLogout, IconSettings, IconChevronDown } from "@tabler/icons-react";
+import { IconChevronDown, IconLogout, IconSettings } from "@tabler/icons-react";
 import { useState } from "react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 
@@ -34,17 +34,17 @@ export function Header({ isAdmin }: HeaderProps) {
 
   const links = isAdmin
     ? [
+        { link: "/admin/dashboard", label: "Dashboard" },
+        { link: "/admin/tenants", label: "Tenants" },
+        { link: "/admin/finances", label: "Finances" },
+        { link: "/admin/reports", label: "Reports" },
+        { link: "/admin/maintenance", label: "Maintenance" },
+      ]
+    : [
         { link: "/tenants/dashboard", label: "Dashboard" },
         { link: "/tenants/rent", label: "Rent Payment" },
         { link: "/tenants/lease", label: "Lease Info" },
         { link: "/tenants/maintenance", label: "Maintenance" },
-      ]
-    : [
-        { link: "/admin/dashboard", label: "Dashboard" },
-        { link: "/", label: "Tenants" },
-        { link: "/", label: "Finances" },
-        { link: "/", label: "Reports" },
-        { link: "/", label: "Maintenance" },
       ];
 
   const handleLogout = async () => {

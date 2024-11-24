@@ -5,4 +5,4 @@ node_modules
 .env
 .yarn/install-state.gz
 .DS_Store
-./postgres-data
+/postgres-data
