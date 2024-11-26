@@ -57,10 +57,7 @@ export const action: ActionFunction = async ({ request }) => {
   const user = await verifyLogin(validatedData.email, validatedData.password);
 
   if (!user) {
-    throw new Response(null, {
-      status: 404,
-      statusText: "User Not Found",
-    });
+    return json({ errors: { user: "User not found" } }, { status: 400 });
   }
 
   return createUserSession({
@@ -102,7 +99,7 @@ export default function Login() {
               variant="filled"
               type="text"
               autoComplete="email"
-              error={actionData?.errors?.email}
+              error={actionData?.errors?.email || actionData?.errors?.user}
               w={{ md: 440, base: 260 }}
             />
             <TextInput

@@ -4,16 +4,22 @@ import { requireUserId } from "~/session.server";
 import { safeRedirect } from "~/utils";
 
 import {
+  Badge,
   Button,
+  Flex,
   Grid,
+  Group,
   Paper,
+  ScrollArea,
+  Stack,
   Text,
   Title,
   useMantineColorScheme,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { MainContainer } from "~/components/main-container/main-container";
-import { Link } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
+import { prisma } from "~/db.server";
 
 export const meta: MetaFunction = () => [{ title: "User Management" }];
 
@@ -26,7 +32,17 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return redirect(redirectTo);
   }
 
-  return { userId };
+  const maintenanceRequests = await prisma.maintenance.findMany({
+    where: {
+      deletedAt: null,
+      userId,
+    },
+    include: {
+      User: true,
+    },
+  });
+
+  return { maintenanceRequests };
 };
 
 const NOTIFICATIONS = [
@@ -56,19 +72,6 @@ const DUE_PAYMENTS = [
   },
 ];
 
-const MAINTENANCE_REQUESTS = [
-  {
-    id: 1,
-    issue: "Leaky faucet in kitchen",
-    status: "Pending",
-  },
-  {
-    id: 2,
-    issue: "Broken heater in living room",
-    status: "Resolved",
-  },
-];
-
 const LEASE_INFORMATION = {
   leaseNumber: "LN-12345",
   startDate: "2023-01-01",
@@ -78,6 +81,7 @@ const LEASE_INFORMATION = {
 };
 
 export default function TenantsDashboard({ isAdmin }: { isAdmin: boolean }) {
+  const { maintenanceRequests } = useLoaderData<typeof loader>();
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -191,22 +195,43 @@ export default function TenantsDashboard({ isAdmin }: { isAdmin: boolean }) {
             <Title order={4} py="md">
               Maintenance Requests
             </Title>
-            <Paper shadow="xs" p="md">
-              {MAINTENANCE_REQUESTS.map((request) => (
-                <Text key={request.id}>
-                  {request.issue} - {request.status}
-                </Text>
-              ))}
+            <Stack pt={"md"}>
+              <ScrollArea h={400} scrollbarSize={7}>
+                {maintenanceRequests.map((request) => (
+                  <Paper key={request.id} shadow="xs" p="md">
+                    <Flex direction="row" justify="space-between">
+                      <Text lineClamp={1}>{request.details}</Text>
+                      <Group justify="center">
+                        <Badge
+                          fullWidth
+                          variant="light"
+                          color={
+                            request.status === "Pending"
+                              ? "yellow"
+                              : request.status === "Completed"
+                                ? "green"
+                                : request.status === "In Progress"
+                                  ? "blue"
+                                  : "gray"
+                          }
+                        >
+                          {request.status}
+                        </Badge>
+                      </Group>
+                    </Flex>
+                  </Paper>
+                ))}
+              </ScrollArea>
               <Button
                 variant="light"
                 fullWidth
                 mt="md"
                 component={Link}
-                to={"/admin/maintenance"}
+                to={"/tenants/maintenance"}
               >
                 View
               </Button>
-            </Paper>
+            </Stack>
           </Paper>
         </Grid.Col>
       </Grid>

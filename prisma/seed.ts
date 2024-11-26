@@ -12,6 +12,7 @@ const prisma = new PrismaClient();
 
 async function seed() {
   // Cleanup existing data
+  await prisma.maintenance.deleteMany();
   await prisma.user.deleteMany();
   await prisma.rolePermission.deleteMany();
   await prisma.permission.deleteMany();
@@ -81,7 +82,7 @@ async function seed() {
     },
   ];
 
-  await Promise.all(
+  const createdUsers = await Promise.all(
     users.map(async ({ email, roleId, mobile, password, username }) => {
       const hashedPassword = await bcrypt.hash(password, 10);
       return prisma.user.create({
@@ -99,6 +100,27 @@ async function seed() {
       });
     }),
   );
+
+  // Create maintenance records
+  const maintenanceRecords = [
+    {
+      details: "AC unit repair in Room 101",
+      userId: createdUsers[1].id,
+      status: "Pending",
+    },
+    {
+      details: "Elevator maintenance scheduled",
+      userId: createdUsers[1].id,
+      status: "In Progress",
+    },
+    {
+      details: "Plumbing issue in cafeteria resolved",
+      userId: createdUsers[1].id,
+      status: "Completed",
+    },
+  ];
+
+  await prisma.maintenance.createMany({ data: maintenanceRecords });
 
   // Create audit logs
   const auditLogs = [

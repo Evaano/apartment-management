@@ -72,35 +72,6 @@ export function useUser(): User {
   return maybeUser;
 }
 
-export function validatePage(page: string | null) {
-  const parsedPage = parseInt(page || "1", 10);
-  if (Number.isNaN(parsedPage) || parsedPage < 1) {
-    return 1;
-  }
-  return parsedPage;
-}
-
-export function validateQuery(query: string | null): string {
-  if (typeof query !== "string" || query.trim() === "") {
-    return "";
-  }
-  return query;
-}
-
-export function validateCategory(category: string | null): string {
-  if (typeof category !== "string" || category.trim() === "") {
-    return "";
-  }
-  return category;
-}
-
-export function validateSubCategory(subCategory: string | null): string {
-  if (typeof subCategory !== "string" || subCategory.trim() === "") {
-    return "";
-  }
-  return subCategory;
-}
-
 // Converts permission to an array if it's a string.
 // Checks if any of the user's permissions are in the required permissions.
 // Returns true if a match is found, false otherwise.
@@ -145,4 +116,16 @@ export function handleKeyDown(event) {
   if (event.key === "Enter" && !event.shiftKey) {
     event.preventDefault();
   }
+}
+
+export function formatDate(date: string | null) {
+  if (!date) return "N/A";
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  }).format(new Date(date));
 }

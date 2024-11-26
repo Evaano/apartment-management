@@ -8,16 +8,17 @@ generator client {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  email     String    @unique
-  name      String
-  mobile    String
-  roleId    String
-  role      Role      @relation(fields: [roleId], references: [id])
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  password  Password?
+  id          String        @id @default(cuid())
+  email       String        @unique
+  name        String
+  mobile      String
+  roleId      String
+  role        Role          @relation(fields: [roleId], references: [id])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  deletedAt   DateTime?
+  password    Password?
+  Maintenance Maintenance[]
 }
 
 model Password {
@@ -54,4 +55,15 @@ model AuditLog {
   action    String
   person    String
   createdAt DateTime @default(now())
+}
+
+model Maintenance {
+  id        Int       @id @default(autoincrement())
+  details   String
+  userId    String
+  User      User      @relation(fields: [userId], references: [id])
+  status    String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 }

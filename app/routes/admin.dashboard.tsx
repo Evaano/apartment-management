@@ -7,11 +7,14 @@ import {
   ActionIcon,
   Anchor,
   Avatar,
+  Badge,
   Button,
+  Flex,
   Grid,
   Group,
   Paper,
   ScrollArea,
+  Stack,
   Table,
   Text,
   Title,
@@ -19,8 +22,9 @@ import {
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { MainContainer } from "~/components/main-container/main-container";
-import { Link } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
+import { prisma } from "~/db.server";
 
 export const meta: MetaFunction = () => [{ title: "User Management" }];
 
@@ -33,14 +37,20 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return redirect(redirectTo);
   }
 
-  return { userId };
-};
+  const maintenanceRequests = await prisma.maintenance.findMany({
+    where: {
+      deletedAt: null,
+      status: {
+        not: "Completed",
+      },
+    },
+    include: {
+      User: true,
+    },
+  });
 
-const NOTIFICATIONS = [
-  "Your rent payment is due in 5 days.",
-  "Maintenance request #1234 has been resolved.",
-  "Lease renewal is available starting next month.",
-];
+  return { maintenanceRequests };
+};
 
 const NEXT_PAYMENT = {
   amount: "$1,200",
@@ -60,19 +70,6 @@ const DUE_PAYMENTS = [
     amount: "$100",
     dueDate: "2024-11-20",
     details: "Utility payment for October 2024.",
-  },
-];
-
-const MAINTENANCE_REQUESTS = [
-  {
-    id: 1,
-    issue: "Leaky faucet in kitchen",
-    status: "Pending",
-  },
-  {
-    id: 2,
-    issue: "Broken heater in living room",
-    status: "Resolved",
   },
 ];
 
@@ -114,17 +111,11 @@ const tenants = [
   },
 ];
 
-export default function AdminDashboard({ isAdmin }: { isAdmin: boolean }) {
+export default function AdminDashboard() {
+  const { maintenanceRequests } = useLoaderData<typeof loader>();
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
   const isMobile = useMediaQuery("(max-width: 768px)");
-
-  // Mock data for the payments list
-  const mockPayments = Array(14).fill({
-    id: 1,
-    description: "Payment Description",
-    hasNotification: true,
-  });
 
   const rows = tenants.map((item) => (
     <Table.Tr key={item.name}>
@@ -303,12 +294,33 @@ export default function AdminDashboard({ isAdmin }: { isAdmin: boolean }) {
             <Title order={4} py="md">
               Maintenance Requests
             </Title>
-            <Paper shadow="xs" p="md">
-              {MAINTENANCE_REQUESTS.map((request) => (
-                <Text key={request.id}>
-                  {request.issue} - {request.status}
-                </Text>
-              ))}
+            <Stack pt={"md"}>
+              <ScrollArea h={400} scrollbarSize={7}>
+                {maintenanceRequests.map((request) => (
+                  <Paper key={request.id} shadow="xs" p="md">
+                    <Flex direction="row" justify="space-between">
+                      <Text lineClamp={1}>{request.details}</Text>
+                      <Group justify="center">
+                        <Badge
+                          fullWidth
+                          variant="light"
+                          color={
+                            request.status === "Pending"
+                              ? "yellow"
+                              : request.status === "Completed"
+                                ? "green"
+                                : request.status === "In Progress"
+                                  ? "blue"
+                                  : "gray"
+                          }
+                        >
+                          {request.status}
+                        </Badge>
+                      </Group>
+                    </Flex>
+                  </Paper>
+                ))}
+              </ScrollArea>
               <Button
                 variant="light"
                 fullWidth
@@ -318,7 +330,7 @@ export default function AdminDashboard({ isAdmin }: { isAdmin: boolean }) {
               >
                 View
               </Button>
-            </Paper>
+            </Stack>
           </Paper>
         </Grid.Col>
       </Grid>
