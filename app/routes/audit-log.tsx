@@ -9,9 +9,9 @@ import {
   Text,
 } from "@mantine/core";
 import {
+  json,
   LoaderFunctionArgs,
   MetaFunction,
-  json,
   redirect,
 } from "@remix-run/node";
 import { useLoaderData, useSearchParams } from "@remix-run/react";
@@ -49,7 +49,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return json({ logs, totalCount, totalPages });
 };
 
-export default function Auditlog() {
+export default function AuditLog() {
   const { logs, totalPages } = useLoaderData<typeof loader>();
   const [searchParams, setSearchParams] = useSearchParams();
 

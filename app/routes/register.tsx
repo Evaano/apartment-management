@@ -8,15 +8,14 @@ import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import { z } from "zod";
 import {
-  TextInput,
-  PasswordInput,
   Button,
-  Stack,
   Container,
-  Title,
-  Text,
-  Box,
   Paper,
+  PasswordInput,
+  Stack,
+  Text,
+  TextInput,
+  Title,
 } from "@mantine/core";
 
 import { createUser, getUserByEmail } from "~/models/user.server";
@@ -96,7 +95,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   });
 };
 
-export default function Join() {
+export default function Register() {
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") ?? undefined;
   const actionData = useActionData<typeof action>();

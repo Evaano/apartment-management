@@ -1,14 +1,14 @@
 import {
-  Text,
-  Title,
-  SimpleGrid,
-  TextInput,
-  Textarea,
   Button,
-  Group,
   Flex,
-  useMantineTheme,
+  Group,
+  SimpleGrid,
+  Text,
+  Textarea,
+  TextInput,
+  Title,
   useMantineColorScheme,
+  useMantineTheme,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { ActionFunctionArgs, json } from "@remix-run/node";
@@ -53,7 +53,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   return json({ errors: null }, { status: 200 });
 };
 
-export default function ContactUs() {
+export default function Contact() {
   const actionData = useActionData<typeof action>();
   const formRef = useRef<HTMLFormElement>(null);
 

@@ -5,19 +5,17 @@ import { safeRedirect } from "~/utils";
 
 import {
   Button,
-  Container,
+  Flex,
   Grid,
   Paper,
-  Title,
-  Text,
-  Flex,
-  ScrollArea,
-  useMantineColorScheme,
-  Textarea,
-  Group,
   Stack,
+  Text,
+  Textarea,
+  Title,
+  useMantineColorScheme,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
+import { MainContainer } from "~/components/main-container/main-container";
 
 export const meta: MetaFunction = () => [{ title: "User Management" }];
 
@@ -81,13 +79,13 @@ const LEASE_INFORMATION = {
   landlordName: "John Doe",
 };
 
-export default function TenantsDashboard({ isAdmin }: { isAdmin: boolean }) {
+export default function TenantsMaintenance({ isAdmin }: { isAdmin: boolean }) {
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   return (
-    <Container fluid p="md">
+    <MainContainer title="Maintenance">
       <Grid>
         {isMobile ? (
           <>
@@ -185,6 +183,6 @@ export default function TenantsDashboard({ isAdmin }: { isAdmin: boolean }) {
           </>
         )}
       </Grid>
-    </Container>
+    </MainContainer>
   );
 }

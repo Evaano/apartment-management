@@ -5,16 +5,12 @@ import { safeRedirect } from "~/utils";
 
 import {
   Button,
-  Flex,
-  Grid,
+  Group,
   Paper,
   Stack,
   Text,
-  Textarea,
-  Title,
   useMantineColorScheme,
 } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
 import { MainContainer } from "~/components/main-container/main-container";
 
 export const meta: MetaFunction = () => [{ title: "User Management" }];
@@ -31,71 +27,41 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return { userId };
 };
 
-export default function TenantsDashboard({ isAdmin }: { isAdmin: boolean }) {
+export default function AdminMaintenance({ isAdmin }: { isAdmin: boolean }) {
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
-  const isMobile = useMediaQuery("(max-width: 768px)");
 
-  const requestSummaryItems = [
-    "Broken pipe in bathroom",
-    "Leaky faucet in kitchen",
-    "Broken heater in living room",
-  ];
+  // Mock data for the payments list
+  const mockPayments = Array(14).fill({
+    id: 1,
+    description: "Payment Description",
+    hasNotification: true,
+  });
 
-  const RequestForm = () => (
-    <Paper py={7} mih={{ base: "auto", md: 600 }}>
-      <Textarea
-        placeholder="Describe the maintenance issue..."
-        mt="md"
-        autosize
-        minRows={2}
-        maxRows={20}
-      />
-      <Button mt="md">Submit</Button>
-    </Paper>
-  );
+  return (
+    <MainContainer title={"Maintenance Requests"}>
+      <Stack gap="xs">
+        {mockPayments.map((payment) => (
+          <Paper
+            key={payment.id}
+            withBorder
+            p="sm"
+            bg={dark ? "dark.6" : "gray.1"}
+          >
+            <Group gap="xl" wrap="nowrap" px="md">
+              <Group gap="xl" wrap="nowrap" style={{ flex: 1 }}>
+                <Text size="sm" lineClamp={1} style={{ flex: 1 }}>
+                  {payment.description}
+                </Text>
+              </Group>
 
-  const RequestSummary = () => (
-    <Paper py={"md"} pl={{ base: 0, md: "sm" }} mih={600}>
-      <Title order={4}>Request Summary</Title>
-      <Stack pt={"md"}>
-        {requestSummaryItems.map((item, index) => (
-          <Paper key={index} shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
-            <Flex direction="row" justify="space-between">
-              <Text px={"xs"}>{item}</Text>
-              <Button variant="light" size="xs" w={{ base: 70, md: "auto" }}>
-                View
+              <Button variant="light" size="xs">
+                Details
               </Button>
-            </Flex>
+            </Group>
           </Paper>
         ))}
       </Stack>
-    </Paper>
-  );
-
-  return (
-    <MainContainer title={"Maintenance Request"}>
-      <Grid>
-        {isMobile ? (
-          <>
-            <Grid.Col span={12}>
-              <RequestForm />
-            </Grid.Col>
-            <Grid.Col span={12}>
-              <RequestSummary />
-            </Grid.Col>
-          </>
-        ) : (
-          <>
-            <Grid.Col span={6}>
-              <RequestForm />
-            </Grid.Col>
-            <Grid.Col span={6}>
-              <RequestSummary />
-            </Grid.Col>
-          </>
-        )}
-      </Grid>
     </MainContainer>
   );
 }

@@ -5,16 +5,15 @@ import { safeRedirect } from "~/utils";
 
 import {
   Button,
-  Container,
   Grid,
   Paper,
-  Title,
   Text,
-  Flex,
+  Title,
   useMantineColorScheme,
-  Stack,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
+import { MainContainer } from "~/components/main-container/main-container";
+import { Link } from "@remix-run/react";
 
 export const meta: MetaFunction = () => [{ title: "User Management" }];
 
@@ -83,255 +82,134 @@ export default function TenantsDashboard({ isAdmin }: { isAdmin: boolean }) {
   const dark = colorScheme === "dark";
   const isMobile = useMediaQuery("(max-width: 768px)");
 
-  if (isMobile) {
-    return (
-      <Container fluid p="md">
-        <Flex gap="md" direction={isMobile ? "column" : "row"} wrap="wrap">
-          <Paper
-            shadow="xs"
-            p="md"
-            className={isMobile ? "w-full" : "w-72"}
-            bg={dark ? "dark" : "gray.1"}
-          >
-            <Stack gap="md">
-              <Title order={4}>Notifications</Title>
-              <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
-                {NOTIFICATIONS.map((notification, index) => (
-                  <Text key={index} className="mb-2">
-                    {notification}
-                  </Text>
-                ))}
-                <Button variant="light" fullWidth className="mt-4">
-                  View
-                </Button>
-              </Paper>
-            </Stack>
+  return (
+    <MainContainer title="Dashboard">
+      <Grid gutter="md">
+        {/* Notifications Section */}
+        <Grid.Col span={{ base: 12, md: 3, lg: 3 }}>
+          <Paper shadow="xs" p="md" mih={600} bg={dark ? "dark" : "gray.1"}>
+            <Title order={4} py="md">
+              Notifications
+            </Title>
+            <Paper shadow="xs" p="md">
+              {NOTIFICATIONS.map((notification, index) => (
+                <Text key={index}>{notification}</Text>
+              ))}
+              <Button variant="light" fullWidth mt="md">
+                View
+              </Button>
+            </Paper>
           </Paper>
+        </Grid.Col>
 
-          <Flex
-            direction="column"
-            gap="md"
-            className={isMobile ? "w-full" : "flex-1"}
-          >
-            {/* Payments Row */}
-            <Flex gap="md" direction={isMobile ? "column" : "row"}>
-              {/* Due Payments */}
+        {/* Payments and Lease Info Section */}
+        <Grid.Col span={{ base: 12, md: 6, lg: 6 }}>
+          <Grid gutter="md">
+            {/* Due Payments */}
+            <Grid.Col span={{ base: 12, md: 6 }}>
               <Paper
                 shadow="xs"
                 p="md"
-                className={isMobile ? "w-full" : "w-64"}
+                mih={300}
                 bg={dark ? "dark" : "gray.1"}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
               >
-                <Stack gap="md">
-                  <Title order={4}>Due Payments</Title>
-                  <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
+                <div>
+                  <Title order={4} py="md">
+                    Due Payments
+                  </Title>
+                  <Paper shadow="xs" p="md">
                     {DUE_PAYMENTS.map((payment) => (
-                      <Text key={payment.id} className="mb-2">
+                      <Text key={payment.id}>
                         {payment.details} - {payment.amount} (Due:{" "}
                         {payment.dueDate})
                       </Text>
                     ))}
                   </Paper>
-                  <Button fullWidth>Pay</Button>
-                </Stack>
+                </div>
+                <Button fullWidth mt="md">
+                  Pay
+                </Button>
               </Paper>
+            </Grid.Col>
 
+            {/* Next Payment */}
+            <Grid.Col span={{ base: 12, md: 6 }}>
               <Paper
                 shadow="xs"
                 p="md"
-                className={isMobile ? "w-full" : "w-64"}
+                mih={300}
                 bg={dark ? "dark" : "gray.1"}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
               >
-                <Stack gap="md">
-                  <Title order={4}>Next Payment</Title>
-                  <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
-                    <Text>
-                      {NEXT_PAYMENT.details} - {NEXT_PAYMENT.amount}
-                      <br />
-                      Due: {NEXT_PAYMENT.dueDate}
-                    </Text>
+                <div>
+                  <Title order={4} py="md">
+                    Next Payment
+                  </Title>
+                  <Paper shadow="xs" p="md">
+                    {NEXT_PAYMENT.details} - {NEXT_PAYMENT.amount} (Due:{" "}
+                    {NEXT_PAYMENT.dueDate})
                   </Paper>
-                  <Button fullWidth>Pay</Button>
-                </Stack>
-              </Paper>
-            </Flex>
-
-            <Paper
-              shadow="xs"
-              p="md"
-              className="w-full"
-              bg={dark ? "dark" : "gray.1"}
-            >
-              <Stack gap="md">
-                <Title order={4}>Lease Info</Title>
-                <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
-                  <Stack gap="xs">
-                    <Text>Lease Number: {LEASE_INFORMATION.leaseNumber}</Text>
-                    <Text>
-                      Lease Term: {LEASE_INFORMATION.startDate} to{" "}
-                      {LEASE_INFORMATION.endDate}
-                    </Text>
-                    <Text>Monthly Rent: {LEASE_INFORMATION.monthlyRent}</Text>
-                    <Text>Landlord: {LEASE_INFORMATION.landlordName}</Text>
-                  </Stack>
-                </Paper>
-              </Stack>
-            </Paper>
-          </Flex>
-
-          <Paper
-            shadow="xs"
-            p="md"
-            className={isMobile ? "w-full" : "w-72"}
-            bg={dark ? "dark" : "gray.1"}
-          >
-            <Stack gap="md">
-              <Title order={4}>Maintenance Requests</Title>
-              <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
-                {MAINTENANCE_REQUESTS.map((request) => (
-                  <Text key={request.id} className="mb-2">
-                    {request.issue} - {request.status}
-                  </Text>
-                ))}
-                <Button variant="light" fullWidth className="mt-4">
-                  View
+                </div>
+                <Button fullWidth mt="md">
+                  Pay
                 </Button>
               </Paper>
-            </Stack>
-          </Paper>
-        </Flex>
-      </Container>
-    );
-  }
+            </Grid.Col>
 
-  return (
-    <Container fluid p="md">
-      <Flex
-        mih={50}
-        gap="md"
-        justify="center"
-        align="center"
-        direction="row"
-        wrap="wrap"
-      >
-        <Paper
-          shadow="xs"
-          p="md"
-          mih={600}
-          miw={300}
-          mah={600}
-          maw={300}
-          bg={dark ? "dark" : "gray.1"}
-        >
-          <Title order={4}>Notifications</Title>
-          <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
-            {NOTIFICATIONS.map((notification, index) => (
-              <Text key={index}>{notification}</Text>
-            ))}
-            <Button variant="light" fullWidth mt="md">
-              View
-            </Button>
-          </Paper>
-        </Paper>
-        <Flex direction="column" gap="md" mih={600} justify="space-between">
-          <Flex gap="md" direction="row">
-            <Paper
-              shadow="xs"
-              p="md"
-              mih={360}
-              miw={200}
-              mah={360}
-              maw={200}
-              bg={dark ? "dark" : "gray.1"}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-              }}
-            >
-              <Title order={4}>Due Payments</Title>
-              <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
-                {DUE_PAYMENTS.map((payment) => (
-                  <div key={payment.id}>
-                    <Text>
-                      {payment.details} - {payment.amount} (Due:{" "}
-                      {payment.dueDate})
-                    </Text>
-                  </div>
-                ))}
+            {/* Lease Info */}
+            <Grid.Col span={12}>
+              <Paper shadow="xs" p="md" mih={285} bg={dark ? "dark" : "gray.1"}>
+                <Title order={4} py="md">
+                  Lease Info
+                </Title>
+                <Paper shadow="xs" p="md">
+                  <Text>Lease Number: {LEASE_INFORMATION.leaseNumber}</Text>
+                  <Text>
+                    Lease Term: {LEASE_INFORMATION.startDate} to{" "}
+                    {LEASE_INFORMATION.endDate}
+                  </Text>
+                  <Text>Monthly Rent: {LEASE_INFORMATION.monthlyRent}</Text>
+                  <Text>Landlord: {LEASE_INFORMATION.landlordName}</Text>
+                </Paper>
               </Paper>
-              <Button fullWidth mt="md">
-                Pay
+            </Grid.Col>
+          </Grid>
+        </Grid.Col>
+
+        {/* Maintenance Requests Section */}
+        <Grid.Col span={{ base: 12, md: 3, lg: 3 }}>
+          <Paper shadow="xs" p="md" mih={600} bg={dark ? "dark" : "gray.1"}>
+            <Title order={4} py="md">
+              Maintenance Requests
+            </Title>
+            <Paper shadow="xs" p="md">
+              {MAINTENANCE_REQUESTS.map((request) => (
+                <Text key={request.id}>
+                  {request.issue} - {request.status}
+                </Text>
+              ))}
+              <Button
+                variant="light"
+                fullWidth
+                mt="md"
+                component={Link}
+                to={"/admin/maintenance"}
+              >
+                View
               </Button>
             </Paper>
-
-            <Paper
-              shadow="xs"
-              p="md"
-              mih={360}
-              miw={200}
-              mah={360}
-              maw={200}
-              bg={dark ? "dark" : "gray.1"}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-              }}
-            >
-              <Title order={4}>Due Payments</Title>
-              <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
-                {NEXT_PAYMENT.details} - {NEXT_PAYMENT.amount} (Due:{" "}
-                {NEXT_PAYMENT.dueDate})
-              </Paper>
-              <Button fullWidth mt="md">
-                Pay
-              </Button>
-            </Paper>
-          </Flex>
-          <Paper
-            shadow="xs"
-            p="md"
-            mih={220}
-            miw={420}
-            mah={220}
-            maw={420}
-            bg={dark ? "dark" : "gray.1"}
-          >
-            <Title order={4}>Lease Info</Title>
-            <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
-              <Text>Lease Number: {LEASE_INFORMATION.leaseNumber}</Text>
-              <Text>
-                Lease Term: {LEASE_INFORMATION.startDate} to{" "}
-                {LEASE_INFORMATION.endDate}
-              </Text>
-              <Text>Monthly Rent: {LEASE_INFORMATION.monthlyRent}</Text>
-              <Text>Landlord: {LEASE_INFORMATION.landlordName}</Text>
-            </Paper>
           </Paper>
-        </Flex>
-        <Paper
-          shadow="xs"
-          p="md"
-          mih={600}
-          miw={300}
-          mah={600}
-          maw={300}
-          bg={dark ? "dark" : "gray.1"}
-        >
-          <Title order={4}>Maintenance Requests</Title>
-          <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
-            {MAINTENANCE_REQUESTS.map((request) => (
-              <Text key={request.id}>
-                {request.issue} - {request.status}
-              </Text>
-            ))}
-            <Button variant="light" fullWidth mt="md">
-              View
-            </Button>
-          </Paper>
-        </Paper>
-      </Flex>
-    </Container>
+        </Grid.Col>
+      </Grid>
+    </MainContainer>
   );
 }

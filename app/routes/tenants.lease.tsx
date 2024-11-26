@@ -3,16 +3,8 @@ import { redirect } from "@remix-run/node";
 import { requireUserId } from "~/session.server";
 import { safeRedirect } from "~/utils";
 
-import {
-  Container,
-  Grid,
-  Paper,
-  Title,
-  Text,
-  Flex,
-  ScrollArea,
-  useMantineColorScheme,
-} from "@mantine/core";
+import { Flex, Grid, Paper, Text, useMantineColorScheme } from "@mantine/core";
+import { MainContainer } from "~/components/main-container/main-container";
 
 export const meta: MetaFunction = () => [{ title: "User Management" }];
 
@@ -76,16 +68,15 @@ const LEASE_INFORMATION = {
   landlordName: "John Doe",
 };
 
-export default function TenantsDashboard({ isAdmin }: { isAdmin: boolean }) {
+export default function TenantsLease({ isAdmin }: { isAdmin: boolean }) {
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
 
   return (
-    <Container fluid p="md">
+    <MainContainer title="Lease Info">
       <Grid>
         <Grid.Col span={12}>
           <Paper shadow="xs" p="md" withBorder mih={600}>
-            <Title order={3}>Lease Details</Title>
             <Flex direction="column" gap="md">
               <Paper shadow="xs" p="md" mt={"md"} bg={dark ? "dark" : "gray.1"}>
                 <Text>
@@ -132,6 +123,6 @@ export default function TenantsDashboard({ isAdmin }: { isAdmin: boolean }) {
           </Paper>
         </Grid.Col>
       </Grid>
-    </Container>
+    </MainContainer>
   );
 }

@@ -1,5 +1,5 @@
-import { Text, Avatar, Paper, Button, Flex } from "@mantine/core";
-import { LoaderFunctionArgs, json } from "@remix-run/node";
+import { Avatar, Button, Paper, Text } from "@mantine/core";
+import { json, LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { getUserById } from "~/models/user.server";
 import { getUserId } from "~/session.server";
@@ -20,7 +20,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return json({ user });
 };
 
-export default function UserProfileView() {
+export default function UserProfile() {
   const { user } = useLoaderData<typeof loader>();
 
   return (

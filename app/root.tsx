@@ -1,10 +1,11 @@
 /* eslint-disable react/prop-types */
 import "@mantine/core/styles.css";
 
-import { MantineProvider, createTheme, ColorSchemeScript } from "@mantine/core";
+import { ColorSchemeScript, createTheme, MantineProvider } from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
 import "@mantine/notifications/styles.css";
+import "@mantine/charts/styles.css";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {

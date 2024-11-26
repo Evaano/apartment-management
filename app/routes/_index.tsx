@@ -17,7 +17,7 @@ export const meta: MetaFunction = () => [{ title: "Welcome" }];
 
 export default function Index() {
   return (
-    <Container size={"xl"} pt={"xl"}>
+    <Container size={"xl"} pt={120}>
       <AspectRatio ratio={16 / 9} maw={1920} mx="auto" mt={"lg"}>
         <BackgroundImage
           src="https://i.imgur.com/zaPcCFF.jpeg"

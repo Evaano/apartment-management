@@ -4,8 +4,8 @@ import {
   Container,
   Flex,
   Paper,
-  TextInput,
   Text,
+  TextInput,
   Title,
 } from "@mantine/core";
 import type {
@@ -71,7 +71,7 @@ export const action: ActionFunction = async ({ request }) => {
   });
 };
 
-export default function LoginPage() {
+export default function Login() {
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/";
   const actionData = useActionData<typeof action>();
@@ -87,7 +87,7 @@ export default function LoginPage() {
   }, [actionData]);
 
   return (
-    <Container size="xs" pt="xl" mt="xl">
+    <Container size="xs" pt={120} mt="xl">
       <Paper p="xl" shadow="xs" withBorder>
         <Title order={1} mb="lg">
           Login

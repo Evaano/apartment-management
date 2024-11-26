@@ -77,7 +77,7 @@ const LEASE_INFORMATION = {
   landlordName: "John Doe",
 };
 
-export default function TenantsDashboard({ isAdmin }: { isAdmin: boolean }) {
+export default function AdminFinances({ isAdmin }: { isAdmin: boolean }) {
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
 

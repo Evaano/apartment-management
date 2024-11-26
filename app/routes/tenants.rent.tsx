@@ -5,15 +5,14 @@ import { safeRedirect } from "~/utils";
 
 import {
   Button,
-  Container,
+  Flex,
   Grid,
   Paper,
-  Title,
   Text,
-  Flex,
-  ScrollArea,
+  Title,
   useMantineColorScheme,
 } from "@mantine/core";
+import { MainContainer } from "~/components/main-container/main-container";
 
 export const meta: MetaFunction = () => [{ title: "User Management" }];
 
@@ -77,12 +76,12 @@ const LEASE_INFORMATION = {
   landlordName: "John Doe",
 };
 
-export default function TenantsDashboard({ isAdmin }: { isAdmin: boolean }) {
+export default function TenantsRent({ isAdmin }: { isAdmin: boolean }) {
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
 
   return (
-    <Container fluid p="md">
+    <MainContainer title="Rent">
       <Grid>
         <Grid.Col span={12}>
           <Paper shadow="xs" p="md" withBorder>
@@ -140,6 +139,6 @@ export default function TenantsDashboard({ isAdmin }: { isAdmin: boolean }) {
           </Paper>
         </Grid.Col>
       </Grid>
-    </Container>
+    </MainContainer>
   );
 }

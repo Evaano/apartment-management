@@ -10,7 +10,12 @@ interface MainContainerProps {
 export function MainContainer({ children, title }: MainContainerProps) {
   const isMobile = useMediaQuery("(max-width: 767px)");
   return (
-    <Container fluid my={110} mx={9} maw={isMobile ? "95%" : "100%"}>
+    <Container
+      fluid
+      my={{ base: 95, md: 110 }}
+      mx={9}
+      maw={isMobile ? "95%" : "100%"}
+    >
       <Paper withBorder radius="md" p="md">
         {title && (
           <Paper bg="primary-blue" py="md" mx={"sm"} radius="md">

@@ -69,7 +69,7 @@ const tenants = [
   },
 ];
 
-export default function TenantsDashboard({ isAdmin }: { isAdmin: boolean }) {
+export default function AdminTenants({ isAdmin }: { isAdmin: boolean }) {
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
   const [scrolled, setScrolled] = useState(false);
