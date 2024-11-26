@@ -13,12 +13,14 @@ export function MainContainer({ children, title }: MainContainerProps) {
     <Container fluid my={110} mx={9} maw={isMobile ? "95%" : "100%"}>
       <Paper withBorder radius="md" p="md">
         {title && (
-          <Title order={3} px={"md"}>
-            {title}
-          </Title>
+          <Paper bg="primary-blue" py="md" mx={"sm"} radius="md">
+            <Title order={3} px={"md"} c="white">
+              {title}
+            </Title>
+          </Paper>
         )}
         <ScrollArea h={"64vh"} mt="md" offsetScrollbars scrollbarSize={7}>
-          <Paper px={"md"}> {children}</Paper>
+          <Paper px={"md"}>{children}</Paper>
         </ScrollArea>
       </Paper>
     </Container>

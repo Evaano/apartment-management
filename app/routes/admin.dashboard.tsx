@@ -87,8 +87,10 @@ export default function TenantsDashboard({ isAdmin }: { isAdmin: boolean }) {
         {/* Notifications Section */}
         <Grid.Col span={{ base: 12, md: 3, lg: 3 }}>
           <Paper shadow="xs" p="md" mih={600} bg={dark ? "dark" : "gray.1"}>
-            <Title order={4}>Notifications</Title>
-            <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
+            <Title order={4} py="md">
+              Notifications
+            </Title>
+            <Paper shadow="xs" p="md">
               {NOTIFICATIONS.map((notification, index) => (
                 <Text key={index}>{notification}</Text>
               ))}
@@ -116,8 +118,10 @@ export default function TenantsDashboard({ isAdmin }: { isAdmin: boolean }) {
                 }}
               >
                 <div>
-                  <Title order={4}>Due Payments</Title>
-                  <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
+                  <Title order={4} py="md">
+                    Due Payments
+                  </Title>
+                  <Paper shadow="xs" p="md">
                     {DUE_PAYMENTS.map((payment) => (
                       <Text key={payment.id}>
                         {payment.details} - {payment.amount} (Due:{" "}
@@ -146,8 +150,10 @@ export default function TenantsDashboard({ isAdmin }: { isAdmin: boolean }) {
                 }}
               >
                 <div>
-                  <Title order={4}>Next Payment</Title>
-                  <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
+                  <Title order={4} py="md">
+                    Next Payment
+                  </Title>
+                  <Paper shadow="xs" p="md">
                     {NEXT_PAYMENT.details} - {NEXT_PAYMENT.amount} (Due:{" "}
                     {NEXT_PAYMENT.dueDate})
                   </Paper>
@@ -161,8 +167,10 @@ export default function TenantsDashboard({ isAdmin }: { isAdmin: boolean }) {
             {/* Lease Info */}
             <Grid.Col span={12}>
               <Paper shadow="xs" p="md" mih={285} bg={dark ? "dark" : "gray.1"}>
-                <Title order={4}>Lease Info</Title>
-                <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
+                <Title order={4} py="md">
+                  Lease Info
+                </Title>
+                <Paper shadow="xs" p="md">
                   <Text>Lease Number: {LEASE_INFORMATION.leaseNumber}</Text>
                   <Text>
                     Lease Term: {LEASE_INFORMATION.startDate} to{" "}
@@ -179,8 +187,10 @@ export default function TenantsDashboard({ isAdmin }: { isAdmin: boolean }) {
         {/* Maintenance Requests Section */}
         <Grid.Col span={{ base: 12, md: 3, lg: 3 }}>
           <Paper shadow="xs" p="md" mih={600} bg={dark ? "dark" : "gray.1"}>
-            <Title order={4}>Maintenance Requests</Title>
-            <Paper shadow="xs" p="md" bg={dark ? "dark" : "gray.1"}>
+            <Title order={4} py="md">
+              Maintenance Requests
+            </Title>
+            <Paper shadow="xs" p="md">
               {MAINTENANCE_REQUESTS.map((request) => (
                 <Text key={request.id}>
                   {request.issue} - {request.status}
