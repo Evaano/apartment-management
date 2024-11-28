@@ -4,6 +4,7 @@ import {
   LoaderFunctionArgs,
   MetaFunction,
   redirect,
+  SerializeFrom,
 } from "@remix-run/node";
 import { requireUserId } from "~/session.server";
 import { formatDate, handleKeyDown, safeRedirect } from "~/utils";
@@ -30,23 +31,12 @@ import { prisma } from "~/db.server";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import { z } from "zod";
+import { Maintenance, User } from "@prisma/client";
 
 export const meta: MetaFunction = () => [{ title: "User Management" }];
 
-type UserInfo = {
-  email: string;
-  name: string;
-};
-
-type Maintenance = {
-  id: number;
-  details: string;
-  userId: string;
-  User: UserInfo;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
+type MaintenanceWithRelations = Maintenance & {
+  User: User;
 };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -124,13 +114,14 @@ export default function TenantsMaintenance() {
   const dark = colorScheme === "dark";
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [opened, { open, close }] = useDisclosure(false);
-  const [selectedRequest, setSelectedRequest] = useState<Maintenance | null>(
-    null,
-  );
+  const [selectedRequest, setSelectedRequest] =
+    useState<SerializeFrom<MaintenanceWithRelations> | null>(null);
 
   const gridSpan = isMobile ? 12 : 6;
 
-  const handleViewDetails = (request: Maintenance) => {
+  const handleViewDetails = (
+    request: SerializeFrom<MaintenanceWithRelations>,
+  ) => {
     setSelectedRequest(request);
     open();
   };

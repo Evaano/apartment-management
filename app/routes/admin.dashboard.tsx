@@ -4,9 +4,7 @@ import { requireUserId } from "~/session.server";
 import { safeRedirect } from "~/utils";
 
 import {
-  ActionIcon,
   Anchor,
-  Avatar,
   Badge,
   Button,
   Flex,
@@ -23,9 +21,7 @@ import {
 import { useMediaQuery } from "@mantine/hooks";
 import { MainContainer } from "~/components/main-container/main-container";
 import { Link, useLoaderData } from "@remix-run/react";
-import { IconPencil, IconTrash } from "@tabler/icons-react";
 import { prisma } from "~/db.server";
-import { getUserWithRole } from "~/models/user.server";
 
 export const meta: MetaFunction = () => [{ title: "User Management" }];
 
@@ -50,13 +46,16 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     },
   });
 
-  return { maintenanceRequests };
-};
+  const tenants = await prisma.user.findMany({
+    where: {
+      deletedAt: null,
+      role: {
+        name: "user",
+      },
+    },
+  });
 
-const NEXT_PAYMENT = {
-  amount: "$1,200",
-  dueDate: "2024-12-01",
-  details: "Rent payment for December 2024.",
+  return { maintenanceRequests, tenants };
 };
 
 const DUE_PAYMENTS = [
@@ -74,78 +73,29 @@ const DUE_PAYMENTS = [
   },
 ];
 
-const tenants = [
-  {
-    avatar:
-      "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-1.png",
-    name: "Robert Wolfkisser",
-    email: "rob_wolf@gmail.com",
-    phone: "+44 (452) 886 09 12",
-  },
-  {
-    avatar:
-      "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-7.png",
-    name: "Jill Jailbreaker",
-    email: "jj@breaker.com",
-    phone: "+44 (934) 777 12 76",
-  },
-  {
-    avatar:
-      "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png",
-    name: "Henry Silkeater",
-    email: "henry@silkeater.io",
-    phone: "+44 (901) 384 88 34",
-  },
-  {
-    avatar:
-      "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png",
-    name: "Bill Horsefighter",
-    email: "bhorsefighter@gmail.com",
-    phone: "+44 (667) 341 45 22",
-  },
-  {
-    avatar:
-      "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-10.png",
-    name: "Jeremy Footviewer",
-    email: "jeremy@foot.dev",
-    phone: "+44 (881) 245 65 65",
-  },
-];
-
 export default function AdminDashboard() {
-  const { maintenanceRequests } = useLoaderData<typeof loader>();
+  const { maintenanceRequests, tenants } = useLoaderData<typeof loader>();
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
   const isMobile = useMediaQuery("(max-width: 768px)");
 
-  const rows = tenants.map((item) => (
-    <Table.Tr key={item.name}>
+  const rows = tenants.map((user) => (
+    <Table.Tr key={user.name}>
       <Table.Td>
         <Group gap="sm">
-          <Avatar size={30} src={item.avatar} radius={30} />
           <Text fz="sm" fw={500}>
-            {item.name}
+            {user.name}
           </Text>
         </Group>
       </Table.Td>
 
       <Table.Td>
         <Anchor component="button" size="sm" c={"primary-blue"}>
-          {item.email}
+          {user.email}
         </Anchor>
       </Table.Td>
       <Table.Td>
-        <Text fz="sm">{item.phone}</Text>
-      </Table.Td>
-      <Table.Td>
-        <Group gap={0} justify="flex-end">
-          <ActionIcon variant="subtle" color="gray">
-            <IconPencil size={16} stroke={1.5} />
-          </ActionIcon>
-          <ActionIcon variant="subtle" color="red">
-            <IconTrash size={16} stroke={1.5} />
-          </ActionIcon>
-        </Group>
+        <Text fz="sm">{user.mobile}</Text>
       </Table.Td>
     </Table.Tr>
   ));
@@ -182,13 +132,18 @@ export default function AdminDashboard() {
                     ))}
                   </Paper>
                 </div>
-                <Button fullWidth mt="md">
+                <Button
+                  fullWidth
+                  mt="md"
+                  component={Link}
+                  to={"/admin/finances"}
+                >
                   View
                 </Button>
               </Paper>
             </Grid.Col>
 
-            {/* Lease Info */}
+            {/* User Info */}
             <Grid.Col span={12}>
               <Paper shadow="xs" p="md" mih={285} bg={dark ? "dark" : "gray.1"}>
                 <Table.ScrollContainer

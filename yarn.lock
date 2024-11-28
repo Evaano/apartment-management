@@ -1080,6 +1080,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mantine/dates@npm:^7.14.3":
+  version: 7.14.3
+  resolution: "@mantine/dates@npm:7.14.3"
+  dependencies:
+    clsx: "npm:^2.1.1"
+  peerDependencies:
+    "@mantine/core": 7.14.3
+    "@mantine/hooks": 7.14.3
+    dayjs: ">=1.0.0"
+    react: ^18.x || ^19.x
+    react-dom: ^18.x || ^19.x
+  checksum: 10c0/5ac78b7f732829341d767ddf5b63da9fd544e25a6bc6bd0e1a558ee93061ed3b7e8796bea1b3feca7244ffc2f57181dc2b6ba744c63b3a97566912204a980463
+  languageName: node
+  linkType: hard
+
 "@mantine/hooks@npm:7.12.2":
   version: 7.12.2
   resolution: "@mantine/hooks@npm:7.12.2"
@@ -3106,6 +3121,13 @@ __metadata:
   version: 3.6.0
   resolution: "date-fns@npm:3.6.0"
   checksum: 10c0/0b5fb981590ef2f8e5a3ba6cd6d77faece0ea7f7158948f2eaae7bbb7c80a8f63ae30b01236c2923cf89bb3719c33aeb150c715ea4fe4e86e37dcf06bed42fb6
+  languageName: node
+  linkType: hard
+
+"dayjs@npm:^1.11.13":
+  version: 1.11.13
+  resolution: "dayjs@npm:1.11.13"
+  checksum: 10c0/a3caf6ac8363c7dade9d1ee797848ddcf25c1ace68d9fe8678ecf8ba0675825430de5d793672ec87b24a69bf04a1544b176547b2539982275d5542a7955f35b7
   languageName: node
   linkType: hard
 
@@ -9233,6 +9255,7 @@ __metadata:
   dependencies:
     "@mantine/charts": "npm:^7.14.2"
     "@mantine/core": "npm:7.12.2"
+    "@mantine/dates": "npm:^7.14.3"
     "@mantine/hooks": "npm:7.12.2"
     "@mantine/modals": "npm:^7.12.2"
     "@mantine/notifications": "npm:^7.12.2"
@@ -9251,6 +9274,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:^7.13.1"
     bcryptjs: "npm:^2.4.3"
     date-fns: "npm:^3.6.0"
+    dayjs: "npm:^1.11.13"
     eslint: "npm:^8.57.0"
     eslint-import-resolver-typescript: "npm:^3.6.1"
     eslint-plugin-import: "npm:^2.29.1"

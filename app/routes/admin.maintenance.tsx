@@ -4,6 +4,7 @@ import {
   LoaderFunctionArgs,
   MetaFunction,
   redirect,
+  SerializeFrom,
 } from "@remix-run/node";
 import { requireUserId } from "~/session.server";
 import { formatDate, handleKeyDown, safeRedirect } from "~/utils";
@@ -27,24 +28,12 @@ import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import qs from "qs";
 import { z } from "zod";
-import { getUserWithRole } from "~/models/user.server";
+import { Maintenance, User } from "@prisma/client";
 
 export const meta: MetaFunction = () => [{ title: "User Management" }];
 
-type UserInfo = {
-  email: string;
-  name: string;
-};
-
-type Maintenance = {
-  id: number;
-  details: string;
-  userId: string;
-  User: UserInfo;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
+type MaintenanceWithRelations = Maintenance & {
+  User: User;
 };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -115,11 +104,12 @@ export default function AdminMaintenance() {
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
   const [opened, { open, close }] = useDisclosure(false);
-  const [selectedRequest, setSelectedRequest] = useState<Maintenance | null>(
-    null,
-  );
+  const [selectedRequest, setSelectedRequest] =
+    useState<SerializeFrom<MaintenanceWithRelations> | null>(null);
 
-  const handleViewDetails = (request: Maintenance) => {
+  const handleViewDetails = (
+    request: SerializeFrom<MaintenanceWithRelations>,
+  ) => {
     setSelectedRequest(request);
     open();
   };

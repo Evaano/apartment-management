@@ -1,18 +1,13 @@
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
-
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 const prisma = new PrismaClient();
 
 async function seed() {
   // Cleanup existing data
   await prisma.maintenance.deleteMany();
+  await prisma.billing.deleteMany();
+  await prisma.lease.deleteMany();
   await prisma.user.deleteMany();
   await prisma.role.deleteMany();
 
@@ -37,44 +32,17 @@ async function seed() {
     },
   });
 
-  // Write role IDs to .env file
-  const envPath = path.join(__dirname, "..", ".env");
-
-  // Read the existing .env file content
-  let envContent = fs.existsSync(envPath)
-    ? fs.readFileSync(envPath, "utf8")
-    : "";
-
-  // Remove existing role ID entries
-  envContent = envContent
-    .split("\n")
-    .filter(
-      (line) =>
-        !line.startsWith("DEFAULT_USER_ROLE_ID=") &&
-        !line.startsWith("ADMIN_ROLE_ID="),
-    )
-    .join("\n");
-
-  // Append new role IDs
-  envContent += `\nDEFAULT_USER_ROLE_ID="${userRole.id}"\n`;
-  envContent += `ADMIN_ROLE_ID="${adminRole.id}"\n`;
-
-  // Write updated content back to .env file
-  fs.writeFileSync(envPath, envContent.trim(), "utf8");
-
-  console.log(`User roles have been written to .env file`);
-
   // Create test users
   const users = [
     {
-      email: "admin.test",
+      email: "admin.test@gmail.com",
       roleId: adminRole.id,
       mobile: "9999999",
       password: "test@123",
       username: "Admin User",
     },
     {
-      email: "user.test",
+      email: "user.test@gmail.com",
       roleId: userRole.id,
       mobile: "7777777",
       password: "test@123",
@@ -101,6 +69,49 @@ async function seed() {
     }),
   );
 
+  // Create dummy lease data for the test user
+  const testUser = createdUsers.find(
+    (user) => user.email === "user.test@gmail.com",
+  );
+  if (testUser) {
+    const lease = await prisma.lease.create({
+      data: {
+        userId: testUser.id,
+        startDate: new Date("2024-01-01"),
+        endDate: new Date("2024-12-31"),
+        rentAmount: 1500,
+        securityDeposit: 3000,
+        maintenanceFee: 100,
+        propertyDetails: "Apartment 202, Block A, Green Valley",
+      },
+    });
+    console.log(`Dummy lease data created for test user: ${testUser.email}`);
+
+    // Create dummy billing records for the lease
+    const billingRecords = [
+      {
+        leaseId: lease.id,
+        amount: 1500,
+        paymentDate: new Date("2024-05-01"),
+        status: "paid",
+        description: "Monthly Rent",
+      },
+    ];
+
+    const billingWithDueDates = billingRecords.map((record) => {
+      const dueDate = new Date(record.paymentDate);
+      dueDate.setDate(dueDate.getDate() + 30); // Add 30 days to payment date for due date
+      return { ...record, dueDate };
+    });
+
+    // Insert billing records into the database
+    await prisma.billing.createMany({
+      data: billingWithDueDates,
+    });
+
+    console.log(`Billing records created for lease: ${lease.id}`);
+  }
+
   // Create maintenance records
   const maintenanceRecords = [
     {
@@ -120,22 +131,9 @@ async function seed() {
     },
   ];
 
-  await prisma.maintenance.createMany({ data: maintenanceRecords });
-
-  // Create audit logs
-  const auditLogs = [
-    { action: "Database seeded", person: "admin" },
-    { action: "User created", person: "admin" },
-    { action: "Role assigned", person: "admin" },
-    { action: "System settings updated", person: "admin" },
-    { action: "User logged in", person: "admin" },
-  ];
-
-  for (const log of auditLogs) {
-    await prisma.auditLog.create({
-      data: log,
-    });
-  }
+  await prisma.maintenance.createMany({
+    data: maintenanceRecords,
+  });
 
   console.log("Database seeded successfully 🌱");
 }

@@ -1,10 +1,16 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
+import {
+  json,
+  LoaderFunctionArgs,
+  MetaFunction,
+  redirect,
+} from "@remix-run/node";
 import { requireUserId } from "~/session.server";
 import { safeRedirect } from "~/utils";
 
 import { Flex, Grid, Paper, Text, useMantineColorScheme } from "@mantine/core";
 import { MainContainer } from "~/components/main-container/main-container";
+import { prisma } from "~/db.server";
+import { useLoaderData } from "@remix-run/react";
 
 export const meta: MetaFunction = () => [{ title: "User Management" }];
 
@@ -17,58 +23,62 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return redirect(redirectTo);
   }
 
-  return { userId };
+  const leaseInfo = await prisma.lease.findUnique({
+    where: {
+      deletedAt: null,
+      userId: userId,
+    },
+    include: {
+      user: true,
+    },
+  });
+
+  if (!leaseInfo) {
+    throw new Response("Lease info not found", {
+      status: 404,
+    });
+  }
+
+  return json({ leaseInfo });
 };
 
 export default function TenantsLease() {
+  const { leaseInfo } = useLoaderData<typeof loader>();
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
 
   return (
     <MainContainer title="Lease Info">
       <Grid>
-        <Grid.Col span={12}>
+        <Grid.Col span={12} key={leaseInfo.id}>
           <Paper shadow="xs" p="md" withBorder mih={600}>
             <Flex direction="column" gap="md">
-              <Paper shadow="xs" p="md" mt={"md"} bg={dark ? "dark" : "gray.1"}>
+              <Paper shadow="xs" p="md" mt="md" bg={dark ? "dark" : "gray.1"}>
                 <Text>
-                  <strong>Lease Number:</strong> LSA-2024-1121
+                  <strong>Tenant Name:</strong> {leaseInfo.user?.name || "N/A"}
                   <br />
-                  <strong>Tenant Name:</strong> John Doe
+                  <strong>Property Address:</strong>{" "}
+                  {leaseInfo.propertyDetails || "N/A"}
                   <br />
-                  <strong>Property Address:</strong> 123 Elm Street, Apt. 4B,
-                  Springfield, XY 67890
+                  <strong>Lease Term:</strong>{" "}
+                  {new Date(leaseInfo.startDate).toLocaleDateString()} to{" "}
+                  {new Date(leaseInfo.endDate).toLocaleDateString()}
                   <br />
-                  <strong>Landlord Name:</strong> Green Realty LLC
+                  <strong>Monthly Rent:</strong> $
+                  {leaseInfo.rentAmount.toLocaleString()}
                   <br />
-                  <strong>Lease Term:</strong> 12 months (January 1, 2024, to
-                  December 31, 2024)
+                  <strong>Security Deposit:</strong> $
+                  {leaseInfo.securityDeposit.toLocaleString()}
                   <br />
-                  <strong>Monthly Rent:</strong> $1,500.00
-                  <br />
-                  <strong>Security Deposit:</strong> $1,500.00 (paid on December
-                  20, 2023)
-                  <br />
-                  <strong>Payment Due Date:</strong> 1st of each month
-                  <br />
-                  <strong>Late Fee:</strong> $50.00 after a 5-day grace period
+                  <strong>Maintenance Fee:</strong> $
+                  {leaseInfo.maintenanceFee.toLocaleString()}
                   <br />
                   <br />
-                  <strong>Utilities and Responsibilities:</strong>
+                  <strong>Created At:</strong>{" "}
+                  {new Date(leaseInfo.createdAt).toLocaleDateString()}
                   <br />
-                  <strong>Electricity:</strong> Tenant's responsibility
-                  <br />
-                  <strong>Water/Sewer:</strong> Included in rent
-                  <br />
-                  <strong>Internet:</strong> Tenant's responsibility
-                  <br />
-                  <strong>Maintenance:</strong> Landlord responsible for
-                  structural repairs; tenant responsible for minor repairs under
-                  $100.
-                  <br />
-                  <br />
-                  <strong>Renewal Terms:</strong> Tenant must notify the
-                  landlord 60 days before the lease end date regarding renewal.
+                  <strong>Last Updated:</strong>{" "}
+                  {new Date(leaseInfo.updatedAt).toLocaleDateString()}
                 </Text>
               </Paper>
             </Flex>

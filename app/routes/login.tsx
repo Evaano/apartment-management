@@ -36,10 +36,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   const validatedForm = z
     .object({
-      email: z
-        .string()
-        .min(1, { message: "Username cannot be empty" })
-        .transform((val) => val.toLowerCase()),
+      email: z.string().email("Invalid email address"),
       password: z.string().min(1, { message: "Password cannot be empty" }),
       redirectTo: z.string(),
       remember: z.string().optional(),

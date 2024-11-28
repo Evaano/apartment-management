@@ -18,7 +18,38 @@ model User {
   updatedAt   DateTime      @updatedAt
   deletedAt   DateTime?
   password    Password?
-  Maintenance Maintenance[]
+  maintenance Maintenance[]
+  lease       Lease?        @relation("UserLease")
+}
+
+model Lease {
+  id              String    @id @default(cuid())
+  user            User      @relation("UserLease", fields: [userId], references: [id])
+  userId          String    @unique
+  startDate       DateTime
+  endDate         DateTime
+  rentAmount      Int
+  securityDeposit Int
+  maintenanceFee  Int
+  propertyDetails String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+  bills           Billing[]
+}
+
+model Billing {
+  id          String    @id @default(cuid())
+  leaseId     String
+  lease       Lease     @relation(fields: [leaseId], references: [id])
+  paymentDate DateTime
+  dueDate     DateTime
+  amount      Int
+  status      String
+  description String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
 }
 
 model Password {
@@ -33,13 +64,6 @@ model Role {
   name        String   @unique
   permissions String[]
   users       User[]
-}
-
-model AuditLog {
-  id        Int      @id @default(autoincrement())
-  action    String
-  person    String
-  createdAt DateTime @default(now())
 }
 
 model Maintenance {

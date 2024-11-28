@@ -5,7 +5,7 @@ import { Outlet } from "@remix-run/react";
 import { Layout } from "~/components/layout/layout";
 import { requireUserId } from "~/session.server";
 import { safeRedirect } from "~/utils";
-import { getUserWithRole } from "~/models/user.server";
+import { prisma } from "~/db.server";
 
 export const meta: MetaFunction = () => [{ title: "User Management" }];
 
@@ -18,9 +18,14 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return redirect(redirectTo);
   }
 
-  const userWithRole = await getUserWithRole(userId);
+  // Get user and their role
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
 
-  if (!userWithRole?.role || userWithRole.role.name !== "admin") {
+  // If no user or user is not a tenant, redirect
+  if (!user || user.role.name !== "admin") {
     return redirect(redirectTo);
   }
 
