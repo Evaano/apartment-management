@@ -67,18 +67,18 @@ async function seed() {
   // Create test users
   const users = [
     {
-      email: "evaan.ibrahim",
+      email: "admin.test",
       roleId: adminRole.id,
-      mobile: "9190402",
+      mobile: "9999999",
       password: "test@123",
-      username: "Evaan Rasheed",
+      username: "Admin User",
     },
     {
-      email: "evaan.test",
+      email: "user.test",
       roleId: userRole.id,
-      mobile: "9190402",
+      mobile: "7777777",
       password: "test@123",
-      username: "Evaan Rasheed",
+      username: "Test User",
     },
   ];
 

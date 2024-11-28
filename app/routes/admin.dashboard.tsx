@@ -25,6 +25,7 @@ import { MainContainer } from "~/components/main-container/main-container";
 import { Link, useLoaderData } from "@remix-run/react";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 import { prisma } from "~/db.server";
+import { getUserWithRole } from "~/models/user.server";
 
 export const meta: MetaFunction = () => [{ title: "User Management" }];
 

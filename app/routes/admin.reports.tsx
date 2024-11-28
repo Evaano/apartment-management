@@ -19,6 +19,7 @@ import { MainContainer } from "~/components/main-container/main-container";
 import { IconBell } from "@tabler/icons-react";
 import { BarChart, PieChart } from "@mantine/charts";
 import { Link } from "@remix-run/react";
+import { getUserWithRole } from "~/models/user.server";
 
 export const meta: MetaFunction = () => [{ title: "User Management" }];
 

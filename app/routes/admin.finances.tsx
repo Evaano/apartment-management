@@ -14,6 +14,7 @@ import {
 } from "@mantine/core";
 import { IconBell } from "@tabler/icons-react";
 import { MainContainer } from "~/components/main-container/main-container";
+import { getUserWithRole } from "~/models/user.server";
 
 export const meta: MetaFunction = () => [{ title: "User Management" }];
 
