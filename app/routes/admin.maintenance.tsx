@@ -27,6 +27,7 @@ import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import qs from "qs";
 import { z } from "zod";
+import { getUserWithRole } from "~/models/user.server";
 
 export const meta: MetaFunction = () => [{ title: "User Management" }];
 

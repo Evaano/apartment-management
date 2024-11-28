@@ -2,6 +2,7 @@ import type { Password, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 import { prisma } from "~/db.server";
+import { redirect } from "@remix-run/node";
 
 export { User };
 
@@ -74,4 +75,17 @@ export async function verifyLogin(
   const { password: _password, ...userWithoutPassword } = userWithPassword;
 
   return userWithoutPassword;
+}
+
+export async function getUserWithRole(userId: string) {
+  return prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      role: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
 }

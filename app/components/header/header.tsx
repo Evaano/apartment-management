@@ -21,31 +21,25 @@ import { useOptionalUser } from "~/utils";
 
 import classes from "./header.module.css";
 
-interface HeaderProps {
-  isAdmin: boolean;
-}
-
-export function Header({ isAdmin }: HeaderProps) {
+export function Header() {
   const user = useOptionalUser();
   const [, setUserMenuOpened] = useState(false);
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
   const isMobile = useMediaQuery("(max-width: 767px)");
 
-  const links = isAdmin
-    ? [
-        { link: "/admin/dashboard", label: "Dashboard" },
-        { link: "/admin/tenants", label: "Tenants" },
-        { link: "/admin/finances", label: "Finances" },
-        { link: "/admin/reports", label: "Reports" },
-        { link: "/admin/maintenance", label: "Maintenance" },
-      ]
-    : [
-        { link: "/tenants/dashboard", label: "Dashboard" },
-        { link: "/tenants/rent", label: "Rent Payment" },
-        { link: "/tenants/lease", label: "Lease Info" },
-        { link: "/tenants/maintenance", label: "Maintenance" },
-      ];
+  const links = [
+    { link: "/admin/dashboard", label: "Admin Dashboard" },
+    { link: "/admin/tenants", label: "Admin Tenants" },
+    { link: "/admin/finances", label: "Admin Finances" },
+    { link: "/admin/reports", label: "Admin Reports" },
+    { link: "/admin/maintenance", label: "Admin Maintenance" },
+    { link: "/tenants/dashboard", label: "Dashboard" },
+    { link: "/tenants/rent", label: "Rent Payment" },
+    { link: "/tenants/lease", label: "Lease Info" },
+    { link: "/tenants/maintenance", label: "Maintenance" },
+    { link: "/audit-log", label: "Audit Logs" },
+  ];
 
   const handleLogout = async () => {
     const response = await fetch("/logout", { method: "POST" });

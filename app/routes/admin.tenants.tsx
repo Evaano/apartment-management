@@ -16,6 +16,7 @@ import { useState } from "react";
 import { MainContainer } from "~/components/main-container/main-container";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 import { useMediaQuery } from "@mantine/hooks";
+import { getUserWithRole } from "~/models/user.server";
 
 export const meta: MetaFunction = () => [{ title: "User Management" }];
 

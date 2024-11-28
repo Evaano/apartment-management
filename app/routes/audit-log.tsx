@@ -20,6 +20,7 @@ import { format } from "date-fns";
 import { getUser } from "~/session.server";
 import { safeRedirect } from "~/utils";
 import { prisma } from "~/db.server";
+import { MainContainer } from "~/components/main-container/main-container";
 
 export const meta: MetaFunction = () => [{ title: "Action Log" }];
 
@@ -76,61 +77,59 @@ export default function AuditLog() {
   );
 
   return (
-    <Paper>
-      <Container size="xl" pt="xl" mt="xl">
-        <Card>
-          <Text>Logs</Text>
-          {Object.entries(logsByDate).map(([date, logs]) => (
-            <div key={date}>
-              <Text>{date}</Text>
-              {logs.map((log) => (
-                <Card key={log.id}>
-                  <Flex
-                    mih={50}
-                    gap="md"
-                    justify="space-between"
-                    align="center"
-                    direction="row"
-                    wrap="wrap"
-                  >
-                    <Text>{log.action}</Text>
-                    <Badge color={"hospital-blue"}>
-                      {new Date(log.createdAt).toLocaleString()}
-                    </Badge>
-                  </Flex>
-                  <Text size="sm" c="dimmed" mt={4}>
-                    {log.person}
-                  </Text>
-                </Card>
-              ))}
-            </div>
-          ))}
-        </Card>
+    <MainContainer title={"Audit Log"}>
+      <Card>
+        <Text>Logs</Text>
+        {Object.entries(logsByDate).map(([date, logs]) => (
+          <div key={date}>
+            <Text>{date}</Text>
+            {logs.map((log) => (
+              <Card key={log.id}>
+                <Flex
+                  mih={50}
+                  gap="md"
+                  justify="space-between"
+                  align="center"
+                  direction="row"
+                  wrap="wrap"
+                >
+                  <Text>{log.action}</Text>
+                  <Badge color={"hospital-blue"}>
+                    {new Date(log.createdAt).toLocaleString()}
+                  </Badge>
+                </Flex>
+                <Text size="sm" c="dimmed" mt={4}>
+                  {log.person}
+                </Text>
+              </Card>
+            ))}
+          </div>
+        ))}
+      </Card>
 
-        <Flex justify="space-between" align="center" mt="lg">
-          <Flex justify="center" style={{ flexGrow: 1 }}>
-            <Pagination.Root
-              total={totalPages}
-              onChange={(newPage) => {
-                const newSearchParams = handleSearchParamsChange(
-                  searchParams,
-                  "page",
-                  String(newPage),
-                );
-                setSearchParams(newSearchParams);
-              }}
-            >
-              <Group gap={"sm"} mt="lg">
-                <Pagination.First />
-                <Pagination.Previous />
-                <Pagination.Items />
-                <Pagination.Next />
-                <Pagination.Last />
-              </Group>
-            </Pagination.Root>
-          </Flex>
+      <Flex justify="space-between" align="center" mt="lg">
+        <Flex justify="center" style={{ flexGrow: 1 }}>
+          <Pagination.Root
+            total={totalPages}
+            onChange={(newPage) => {
+              const newSearchParams = handleSearchParamsChange(
+                searchParams,
+                "page",
+                String(newPage),
+              );
+              setSearchParams(newSearchParams);
+            }}
+          >
+            <Group gap={"sm"} mt="lg">
+              <Pagination.First />
+              <Pagination.Previous />
+              <Pagination.Items />
+              <Pagination.Next />
+              <Pagination.Last />
+            </Group>
+          </Pagination.Root>
         </Flex>
-      </Container>
-    </Paper>
+      </Flex>
+    </MainContainer>
   );
 }
