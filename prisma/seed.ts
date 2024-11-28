@@ -14,16 +14,30 @@ async function seed() {
   // Cleanup existing data
   await prisma.maintenance.deleteMany();
   await prisma.user.deleteMany();
-  await prisma.rolePermission.deleteMany();
-  await prisma.permission.deleteMany();
   await prisma.role.deleteMany();
-  await prisma.auditLog.deleteMany();
 
   // Create roles
-  const userRole = await prisma.role.create({ data: { name: "user" } });
-  const adminRole = await prisma.role.create({ data: { name: "admin" } });
+  const userRole = await prisma.role.create({
+    data: {
+      name: "user",
+      permissions: ["view-maintenance", "create-maintenance-request"],
+    },
+  });
 
-  // Write user role ID to .env file
+  const adminRole = await prisma.role.create({
+    data: {
+      name: "admin",
+      permissions: [
+        "manage-waitlist",
+        "view-waitlist",
+        "edit-user",
+        "view-all-maintenance",
+        "manage-maintenance",
+      ],
+    },
+  });
+
+  // Write role IDs to .env file
   const envPath = path.join(__dirname, "..", ".env");
 
   // Read the existing .env file content
@@ -31,7 +45,7 @@ async function seed() {
     ? fs.readFileSync(envPath, "utf8")
     : "";
 
-  // Remove existing DEFAULT_USER_ROLE_ID and ADMIN_ROLE_ID entries
+  // Remove existing role ID entries
   envContent = envContent
     .split("\n")
     .filter(
@@ -50,27 +64,13 @@ async function seed() {
 
   console.log(`User roles have been written to .env file`);
 
-  // Create permissions
-  const permissions = ["manage-waitlist", "view-waitlist", "edit-user"];
-  const createdPermissions = await Promise.all(
-    permissions.map((name) => prisma.permission.create({ data: { name } })),
-  );
-
-  // Assign permissions to roles
-  await prisma.rolePermission.createMany({
-    data: createdPermissions.map((permission) => ({
-      roleId: adminRole.id,
-      permissionId: permission.id,
-    })),
-  });
-
   // Create test users
   const users = [
     {
       email: "evaan.ibrahim",
       roleId: adminRole.id,
       mobile: "9190402",
-      password: "Ele#2321!",
+      password: "test@123",
       username: "Evaan Rasheed",
     },
     {
@@ -125,14 +125,10 @@ async function seed() {
   // Create audit logs
   const auditLogs = [
     { action: "Database seeded", person: "admin" },
-    { action: "Database seeded again", person: "admin" },
     { action: "User created", person: "admin" },
     { action: "Role assigned", person: "admin" },
-    { action: "Permission updated", person: "admin" },
     { action: "System settings updated", person: "admin" },
     { action: "User logged in", person: "admin" },
-    { action: "User logged out", person: "admin" },
-    { action: "Database backup created", person: "admin" },
   ];
 
   for (const log of auditLogs) {

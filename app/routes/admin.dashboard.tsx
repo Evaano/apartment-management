@@ -156,7 +156,7 @@ export default function AdminDashboard() {
         <Grid.Col span={{ base: 12, md: 6, lg: 6 }}>
           <Grid gutter="md">
             {/* Due Payments */}
-            <Grid.Col span={{ base: 12, md: 6 }}>
+            <Grid.Col span={{ base: 12, md: 12 }}>
               <Paper
                 shadow="xs"
                 p="md"
@@ -182,35 +182,7 @@ export default function AdminDashboard() {
                   </Paper>
                 </div>
                 <Button fullWidth mt="md">
-                  Pay
-                </Button>
-              </Paper>
-            </Grid.Col>
-
-            {/* Next Payment */}
-            <Grid.Col span={{ base: 12, md: 6 }}>
-              <Paper
-                shadow="xs"
-                p="md"
-                mih={300}
-                bg={dark ? "dark" : "gray.1"}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                }}
-              >
-                <div>
-                  <Title order={4} py="md">
-                    Next Payment
-                  </Title>
-                  <Paper shadow="xs" p="md">
-                    {NEXT_PAYMENT.details} - {NEXT_PAYMENT.amount} (Due:{" "}
-                    {NEXT_PAYMENT.dueDate})
-                  </Paper>
-                </div>
-                <Button fullWidth mt="md">
-                  Pay
+                  View
                 </Button>
               </Paper>
             </Grid.Col>
@@ -248,19 +220,6 @@ export default function AdminDashboard() {
               <div>
                 <Title order={4} py="md">
                   Collected Payments
-                </Title>
-                <Paper shadow="xs" p="md">
-                  {DUE_PAYMENTS.map((payment) => (
-                    <Text key={payment.id}>
-                      {payment.details} - {payment.amount} (Due:{" "}
-                      {payment.dueDate})
-                    </Text>
-                  ))}
-                </Paper>
-              </div>
-              <div>
-                <Title order={4} py="md">
-                  Outstanding Payments
                 </Title>
                 <Paper shadow="xs" p="md">
                   {DUE_PAYMENTS.map((payment) => (

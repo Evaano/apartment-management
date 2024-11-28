@@ -54,6 +54,7 @@ export async function verifyLogin(
     where: { email },
     include: {
       password: true,
+      role: true,
     },
   });
 
@@ -74,4 +75,10 @@ export async function verifyLogin(
   const { password: _password, ...userWithoutPassword } = userWithPassword;
 
   return userWithoutPassword;
+}
+
+export async function getRoleById(roleId: string) {
+  return prisma.role.findUnique({
+    where: { id: roleId },
+  });
 }

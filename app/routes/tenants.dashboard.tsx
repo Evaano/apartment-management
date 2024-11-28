@@ -16,7 +16,6 @@ import {
   Title,
   useMantineColorScheme,
 } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
 import { MainContainer } from "~/components/main-container/main-container";
 import { Link, useLoaderData } from "@remix-run/react";
 import { prisma } from "~/db.server";
@@ -80,11 +79,10 @@ const LEASE_INFORMATION = {
   landlordName: "John Doe",
 };
 
-export default function TenantsDashboard({ isAdmin }: { isAdmin: boolean }) {
+export default function TenantsDashboard() {
   const { maintenanceRequests } = useLoaderData<typeof loader>();
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
-  const isMobile = useMediaQuery("(max-width: 768px)");
 
   return (
     <MainContainer title="Dashboard">

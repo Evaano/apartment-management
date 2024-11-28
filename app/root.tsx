@@ -14,7 +14,6 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData,
 } from "@remix-run/react";
 
 import { getUser } from "~/session.server";
@@ -46,14 +45,13 @@ export const meta: MetaFunction = ({ error }) => {
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await getUser(request);
-  const isAdmin = user?.roleId === process.env.ADMIN_ROLE_ID;
 
-  return json({ user, isAdmin });
+  return json({
+    user,
+  });
 };
 
 export default function App() {
-  const { user, isAdmin } = useLoaderData<typeof loader>();
-
   return (
     <html lang="en" className="h-full">
       <head>
@@ -68,7 +66,7 @@ export default function App() {
         <MantineProvider theme={theme} defaultColorScheme={"light"}>
           <ModalsProvider>
             <Notifications />
-            <Layout isAdmin={isAdmin}>
+            <Layout>
               <Outlet />
             </Layout>
             <ScrollRestoration />

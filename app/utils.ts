@@ -2,7 +2,11 @@ import { showNotification } from "@mantine/notifications";
 import { useMatches } from "@remix-run/react";
 import { useMemo } from "react";
 
-import type { User } from "~/models/user.server";
+import type { User as PrismaUser } from "~/models/user.server";
+
+type User = PrismaUser & {
+  roleName: string;
+};
 
 const DEFAULT_REDIRECT = "/";
 
@@ -54,12 +58,15 @@ function isUser(user: unknown): user is User {
   );
 }
 
-export function useOptionalUser(): User | undefined {
+export function useOptionalUser(): (User & { roleName: string }) | undefined {
   const data = useMatchesData("root");
   if (!data || !isUser(data.user)) {
     return undefined;
   }
-  return data.user;
+  return {
+    ...data.user,
+    roleName: (data.user as User).roleName || "",
+  };
 }
 
 export function useUser(): User {

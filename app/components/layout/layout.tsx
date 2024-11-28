@@ -5,15 +5,14 @@ import { Footer } from "~/components/footer/footer";
 
 interface ShellProps {
   children: React.ReactNode;
-  isAdmin: boolean;
 }
 
-export function Layout({ children, isAdmin }: ShellProps) {
+export function Layout({ children }: ShellProps) {
   return (
     <AppShell header={{ height: 81 }}>
       <AppShell.Header className={RemoveScroll.classNames.zeroRight}>
         <Container size="xl" px="md" className={classes.inner}>
-          <Header isAdmin={isAdmin} />
+          <Header />
         </Container>
       </AppShell.Header>
       <main>{children}</main>

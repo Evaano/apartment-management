@@ -20,9 +20,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return { userId };
 };
 
-export default function Tenants(isAdmin: boolean) {
+export default function Tenants() {
   return (
-    <Layout isAdmin={isAdmin}>
+    <Layout>
       <Outlet />
     </Layout>
   );

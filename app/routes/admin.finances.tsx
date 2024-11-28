@@ -29,55 +29,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return { userId };
 };
 
-const NOTIFICATIONS = [
-  "Your rent payment is due in 5 days.",
-  "Maintenance request #1234 has been resolved.",
-  "Lease renewal is available starting next month.",
-];
-
-const NEXT_PAYMENT = {
-  amount: "$1,200",
-  dueDate: "2024-12-01",
-  details: "Rent payment for December 2024.",
-};
-
-const DUE_PAYMENTS = [
-  {
-    id: 1,
-    amount: "$1,200",
-    dueDate: "2024-11-25",
-    details: "Rent payment for November 2024.",
-  },
-  {
-    id: 2,
-    amount: "$100",
-    dueDate: "2024-11-20",
-    details: "Utility payment for October 2024.",
-  },
-];
-
-const MAINTENANCE_REQUESTS = [
-  {
-    id: 1,
-    issue: "Leaky faucet in kitchen",
-    status: "Pending",
-  },
-  {
-    id: 2,
-    issue: "Broken heater in living room",
-    status: "Resolved",
-  },
-];
-
-const LEASE_INFORMATION = {
-  leaseNumber: "LN-12345",
-  startDate: "2023-01-01",
-  endDate: "2025-12-31",
-  monthlyRent: "$1,200",
-  landlordName: "John Doe",
-};
-
-export default function AdminFinances({ isAdmin }: { isAdmin: boolean }) {
+export default function AdminFinances() {
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
 

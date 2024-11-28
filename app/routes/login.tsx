@@ -15,11 +15,12 @@ import type {
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { z } from "zod";
 
 import { verifyLogin } from "~/models/user.server";
 import { createUserSession, getUserId } from "~/session.server";
+import { useOptionalUser } from "~/utils";
 
 export const meta: MetaFunction = () => [{ title: "Login" }];
 
@@ -65,6 +66,7 @@ export const action: ActionFunction = async ({ request }) => {
     remember: validatedData.remember === "on",
     request,
     userId: user.id,
+    userRole: user.role.name,
   });
 };
 
@@ -74,14 +76,8 @@ export default function Login() {
   const actionData = useActionData<typeof action>();
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (actionData?.errors?.email) {
-      emailRef.current?.focus();
-    } else if (actionData?.errors?.password) {
-      passwordRef.current?.focus();
-    }
-  }, [actionData]);
+  const user = useOptionalUser();
+  console.log(user?.roleId);
 
   return (
     <Container size="xs" pt={120} mt="xl">

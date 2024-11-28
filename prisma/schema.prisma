@@ -12,8 +12,8 @@ model User {
   email       String        @unique
   name        String
   mobile      String
-  roleId      String
   role        Role          @relation(fields: [roleId], references: [id])
+  roleId      String
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   deletedAt   DateTime?
@@ -29,25 +29,10 @@ model Password {
 }
 
 model Role {
-  id          String           @id @default(cuid())
-  name        String           @unique
+  id          String   @id @default(cuid())
+  name        String   @unique
+  permissions String[]
   users       User[]
-  permissions RolePermission[]
-}
-
-model Permission {
-  id    String           @id @default(cuid())
-  name  String           @unique
-  roles RolePermission[]
-}
-
-model RolePermission {
-  role         Role       @relation(fields: [roleId], references: [id])
-  roleId       String
-  permission   Permission @relation(fields: [permissionId], references: [id])
-  permissionId String
-
-  @@id([roleId, permissionId])
 }
 
 model AuditLog {

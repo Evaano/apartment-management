@@ -11,10 +11,9 @@ import {
 import { LoaderFunctionArgs, MetaFunction, redirect } from "@remix-run/node";
 
 import classes from "~/routes-style/index.module.css";
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link } from "@remix-run/react";
 import { safeRedirect, useOptionalUser } from "~/utils";
 import { requireUserId } from "~/session.server";
-import { prisma } from "~/db.server";
 
 export const meta: MetaFunction = () => [{ title: "Welcome" }];
 
@@ -27,22 +26,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return redirect(redirectTo);
   }
 
-  const adminRole = await prisma.role.findFirst({
-    where: {
-      name: "admin",
-    },
-    select: {
-      id: true,
-    },
-  });
-
-  return { adminRole };
+  return { userId };
 };
 
 export default function Index() {
-  const { adminRole } = useLoaderData<typeof loader>();
   const user = useOptionalUser();
-  const isAdmin = user?.roleId === adminRole?.id;
 
   return (
     <Container size={"xl"} pt={120}>
@@ -64,7 +52,7 @@ export default function Index() {
             </Text>
             <Group justify="flex-start" mt="lg">
               {user ? (
-                isAdmin ? (
+                user.roleName === "admin" ? (
                   <Button
                     to="/admin/dashboard"
                     component={Link}

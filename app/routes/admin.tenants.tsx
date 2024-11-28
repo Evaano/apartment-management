@@ -12,10 +12,8 @@ import {
   Text,
   useMantineColorScheme,
 } from "@mantine/core";
-import { useState } from "react";
 import { MainContainer } from "~/components/main-container/main-container";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
-import { useMediaQuery } from "@mantine/hooks";
 
 export const meta: MetaFunction = () => [{ title: "User Management" }];
 
@@ -69,11 +67,8 @@ const tenants = [
   },
 ];
 
-export default function AdminTenants({ isAdmin }: { isAdmin: boolean }) {
+export default function AdminTenants() {
   const { colorScheme } = useMantineColorScheme();
-  const dark = colorScheme === "dark";
-  const [scrolled, setScrolled] = useState(false);
-  const isMobile = useMediaQuery("(max-width: 767px)");
 
   const rows = tenants.map((item) => (
     <Table.Tr key={item.name}>

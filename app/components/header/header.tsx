@@ -17,35 +17,33 @@ import { IconChevronDown, IconLogout, IconSettings } from "@tabler/icons-react";
 import { useState } from "react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 
+import classes from "./header.module.css";
 import { useOptionalUser } from "~/utils";
 
-import classes from "./header.module.css";
-
-interface HeaderProps {
-  isAdmin: boolean;
-}
-
-export function Header({ isAdmin }: HeaderProps) {
-  const user = useOptionalUser();
+export function Header() {
   const [, setUserMenuOpened] = useState(false);
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
   const isMobile = useMediaQuery("(max-width: 767px)");
+  const user = useOptionalUser();
 
-  const links = isAdmin
-    ? [
-        { link: "/admin/dashboard", label: "Dashboard" },
-        { link: "/admin/tenants", label: "Tenants" },
-        { link: "/admin/finances", label: "Finances" },
-        { link: "/admin/reports", label: "Reports" },
-        { link: "/admin/maintenance", label: "Maintenance" },
-      ]
-    : [
-        { link: "/tenants/dashboard", label: "Dashboard" },
-        { link: "/tenants/rent", label: "Rent Payment" },
-        { link: "/tenants/lease", label: "Lease Info" },
-        { link: "/tenants/maintenance", label: "Maintenance" },
-      ];
+  const links =
+    user?.roleName === "admin"
+      ? [
+          { link: "/admin/dashboard", label: "Dashboard" },
+          { link: "/admin/tenants", label: "Tenants" },
+          { link: "/admin/finances", label: "Finances" },
+          { link: "/admin/reports", label: "Reports" },
+          { link: "/admin/maintenance", label: "Maintenance" },
+        ]
+      : user?.roleName === "user"
+        ? [
+            { link: "/tenants/dashboard", label: "Dashboard" },
+            { link: "/tenants/rent", label: "Rent Payment" },
+            { link: "/tenants/lease", label: "Lease Info" },
+            { link: "/tenants/maintenance", label: "Maintenance" },
+          ]
+        : []; // No links if no role is defined
 
   const handleLogout = async () => {
     const response = await fetch("/logout", { method: "POST" });
