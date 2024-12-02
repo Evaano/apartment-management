@@ -1,8 +1,8 @@
 import {
   LoaderFunctionArgs,
   MetaFunction,
-  SerializeFrom,
   redirect,
+  SerializeFrom,
 } from "@remix-run/node";
 import { requireUserId } from "~/session.server";
 import { safeRedirect } from "~/utils";
@@ -68,7 +68,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       deletedAt: null,
     },
     orderBy: {
-      paymentDate: "desc",
+      dueDate: "desc",
     },
     include: {
       lease: {
@@ -95,15 +95,23 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     where: {
       deletedAt: null,
       status: "paid",
+      paymentDate: {
+        not: null,
+      },
     },
   });
 
-  const unpaidBills = await prisma.billing.count({
+  console.log(paidBills);
+
+  const pendingBills = await prisma.billing.count({
     where: {
       deletedAt: null,
       status: "pending",
+      paymentDate: null,
     },
   });
+
+  console.log(pendingBills);
 
   const getMaintenanceCountByMonth = async (month: number, status: string) => {
     const startDate = new Date(new Date().getFullYear(), month, 1);
@@ -150,13 +158,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     bills,
     users,
     paidBills,
-    unpaidBills,
+    pendingBills,
     barData,
   };
 };
 
 export default function AdminReports() {
-  const { maintenanceRequests, bills, paidBills, unpaidBills, barData } =
+  const { maintenanceRequests, bills, paidBills, pendingBills, barData } =
     useLoaderData<typeof loader>();
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
@@ -167,7 +175,7 @@ export default function AdminReports() {
 
   const data = [
     { name: "Paid", value: paidBills, color: "yellow" },
-    { name: "Unpaid", value: unpaidBills, color: "green" },
+    { name: "Pending", value: pendingBills, color: "green" },
   ];
 
   const handleViewDetails = (payment: SerializeFrom<BillingWithRelations>) => {
@@ -340,23 +348,16 @@ export default function AdminReports() {
               {selectedPayment.lease?.propertyDetails}
             </Title>
             <Form method="post">
-              <input
-                type={"hidden"}
-                value={selectedPayment?.id}
-                name={"billId"}
-              />
               <SimpleGrid cols={2} my="md">
                 <TextInput
                   placeholder="User to bill"
-                  defaultValue={selectedPayment?.leaseId}
-                  name="leaseId"
+                  defaultValue={selectedPayment?.lease?.user?.name}
                   readOnly
                   variant={"filled"}
                 />
                 <TextInput
                   placeholder="Status"
                   defaultValue={selectedPayment?.status}
-                  name="status"
                   readOnly
                   variant={"filled"}
                 />
@@ -364,7 +365,6 @@ export default function AdminReports() {
               <SimpleGrid cols={3} my="md">
                 <DateInput
                   label="Payment Date"
-                  name="paymentDate"
                   highlightToday
                   defaultValue={
                     selectedPayment?.paymentDate
@@ -376,7 +376,6 @@ export default function AdminReports() {
                 />
                 <DateInput
                   label="Due Date"
-                  name="dueDate"
                   highlightToday
                   defaultValue={
                     selectedPayment?.dueDate
@@ -389,7 +388,6 @@ export default function AdminReports() {
                 <NumberInput
                   hideControls
                   label="Amount"
-                  name="amount"
                   defaultValue={selectedPayment?.amount}
                   readOnly
                   variant={"filled"}
@@ -397,7 +395,6 @@ export default function AdminReports() {
               </SimpleGrid>
               <Textarea
                 label="Description"
-                name="description"
                 defaultValue={selectedPayment?.description}
                 readOnly
                 variant={"filled"}

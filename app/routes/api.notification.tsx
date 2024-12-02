@@ -19,7 +19,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     throw new Error("Bill not found");
   }
 
-  const { amount, paymentDate, dueDate, description, lease } = bill;
+  const { amount, dueDate, description, lease } = bill;
   const { user } = lease;
 
   // Check if a notification already exists for this user and bill
@@ -44,7 +44,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       data: {
         userId: user.id,
         details: description,
-        paymentDate: paymentDate,
         dueDate: dueDate,
         amount: amount,
       },

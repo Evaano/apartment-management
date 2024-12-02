@@ -43,7 +43,7 @@ export async function loader() {
     headers: {
       "Content-Type":
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "Content-Disposition": `attachment; filename="bills_summary.xlsx"`,
+      "Content-Disposition": `attachment; filename="maintenance-report.xlsx"`,
     },
   });
 }

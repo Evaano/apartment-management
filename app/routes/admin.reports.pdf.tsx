@@ -8,7 +8,7 @@ export async function loader() {
       deletedAt: null,
     },
     orderBy: {
-      paymentDate: "desc",
+      dueDate: "desc",
     },
     include: {
       lease: {
@@ -25,7 +25,7 @@ export async function loader() {
 
   const generatePDF = async (bills: any[]): Promise<Buffer> => {
     return new Promise((resolve, reject) => {
-      const doc = new PDFDocument({ layout: "portrait" });
+      const doc = new PDFDocument({ layout: "landscape" });
       const chunks: Buffer[] = [];
 
       doc.on("data", (chunk) => chunks.push(chunk));
@@ -40,16 +40,17 @@ export async function loader() {
         .font("Helvetica-Bold")
         .text("Bill Summary", margin, margin, { align: "center" });
 
-      // Table headers
       const headers = [
-        "Payment Date",
+        "Created At",
+        "Due Date",
         "Tenant",
         "Property",
         "Amount",
         "Status",
       ];
 
-      const columnWidths = [120, 80, 150, 80, 70]; // Adjusted column widths
+      const columnWidths = [120, 120, 100, 200, 80]; // Adjusted column widths to accommodate more text
+
       const getX = (colIndex: number) =>
         margin + columnWidths.slice(0, colIndex).reduce((a, b) => a + b, 0);
 
@@ -82,28 +83,33 @@ export async function loader() {
         }
 
         // Row data
-        doc.text(formatDate(bill.paymentDate), getX(0), yPosition, {
+        doc.text(formatDate(bill.createdAt), getX(0), yPosition, {
           width: columnWidths[0],
           align: "left",
         });
 
-        doc.text(bill.lease.user.name, getX(1), yPosition, {
+        doc.text(formatDate(bill.dueDate), getX(1), yPosition, {
           width: columnWidths[1],
           align: "left",
         });
 
-        doc.text(bill.lease.propertyDetails || "N/A", getX(2), yPosition, {
+        doc.text(bill.lease.user.name || "N/A", getX(2), yPosition, {
           width: columnWidths[2],
           align: "left",
         });
 
-        doc.text(`$${bill.amount.toFixed(2)}`, getX(3), yPosition, {
+        doc.text(bill.lease.propertyDetails || "N/A", getX(3), yPosition, {
           width: columnWidths[3],
           align: "left",
         });
 
-        doc.text(bill.status || "Pending", getX(4), yPosition, {
+        doc.text(`$${bill.amount.toFixed(2)}`, getX(4), yPosition, {
           width: columnWidths[4],
+          align: "left",
+        });
+
+        doc.text(bill.status, getX(5), yPosition, {
+          width: columnWidths[5],
           align: "left",
         });
       });

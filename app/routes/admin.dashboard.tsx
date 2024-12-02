@@ -58,9 +58,19 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const duePayments = await prisma.billing.findMany({
     where: {
       deletedAt: null,
+      paymentDate: null,
+      status: "pending",
       dueDate: {
         lt: new Date(),
       },
+    },
+  });
+
+  const outstandingPayments = await prisma.billing.findMany({
+    where: {
+      deletedAt: null,
+      paymentDate: null,
+      status: "pending",
     },
   });
 
@@ -68,15 +78,29 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     where: {
       deletedAt: null,
       status: "paid",
+      paymentDate: {
+        not: null,
+      },
     },
   });
 
-  return { maintenanceRequests, tenants, duePayments, collectedPayments };
+  return {
+    maintenanceRequests,
+    tenants,
+    duePayments,
+    collectedPayments,
+    outstandingPayments,
+  };
 };
 
 export default function AdminDashboard() {
-  const { maintenanceRequests, tenants, duePayments, collectedPayments } =
-    useLoaderData<typeof loader>();
+  const {
+    maintenanceRequests,
+    tenants,
+    duePayments,
+    collectedPayments,
+    outstandingPayments,
+  } = useLoaderData<typeof loader>();
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -193,7 +217,7 @@ export default function AdminDashboard() {
                   Outstanding Payments
                 </Title>
                 <Paper shadow="xs" p="md">
-                  {duePayments.map((payment) => (
+                  {outstandingPayments.map((payment) => (
                     <Text key={payment.id}>
                       {payment.description} - MVR {payment.amount} (Due:{" "}
                       {formatDate(payment.dueDate)})

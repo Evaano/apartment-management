@@ -137,17 +137,17 @@ async function seed() {
     {
       details: "AC unit repair in Room 101",
       userId: createdUsers[1].id,
-      status: "Pending",
+      status: "pending",
     },
     {
       details: "Elevator maintenance scheduled",
       userId: createdUsers[1].id,
-      status: "In Progress",
+      status: "inprogress",
     },
     {
       details: "Plumbing issue in cafeteria resolved",
       userId: createdUsers[1].id,
-      status: "Completed",
+      status: "completed",
     },
   ];
 
