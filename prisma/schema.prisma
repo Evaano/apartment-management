@@ -8,18 +8,19 @@ generator client {
 }
 
 model User {
-  id          String        @id @default(cuid())
-  email       String        @unique
-  name        String
-  mobile      String
-  role        Role          @relation(fields: [roleId], references: [id])
-  roleId      String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  deletedAt   DateTime?
-  password    Password?
-  maintenance Maintenance[]
-  lease       Lease?        @relation("UserLease")
+  id           String         @id @default(cuid())
+  email        String         @unique
+  name         String
+  mobile       String
+  role         Role           @relation(fields: [roleId], references: [id])
+  roleId       String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  deletedAt    DateTime?
+  password     Password?
+  maintenance  Maintenance[]
+  lease        Lease?         @relation("UserLease")
+  Notification Notification[]
 }
 
 model Lease {
@@ -42,7 +43,7 @@ model Billing {
   id          String    @id @default(cuid())
   leaseId     String
   lease       Lease     @relation(fields: [leaseId], references: [id])
-  paymentDate DateTime
+  paymentDate DateTime?
   dueDate     DateTime
   amount      Int
   status      String
@@ -50,6 +51,7 @@ model Billing {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
+  filepath    String?
 }
 
 model Password {
@@ -75,4 +77,15 @@ model Maintenance {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  details   String
+  dueDate   DateTime
+  amount    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

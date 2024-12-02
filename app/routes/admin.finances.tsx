@@ -42,7 +42,7 @@ import qs from "qs";
 import { z } from "zod";
 import { modals } from "@mantine/modals";
 
-type BillingWithRelations = Billing & {
+export type BillingWithRelations = Billing & {
   lease: (Lease & { user?: User }) | null;
 };
 
@@ -85,6 +85,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     },
   });
 
+  console.log(bills);
+
   return json({ bills, users });
 };
 
@@ -100,21 +102,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const text = await request.text();
   const parsedText = qs.parse(text);
 
-  const formSchema = z
-    .object({
-      billId: z.string().cuid().optional(),
-      leaseId: z.string().cuid(),
-      paymentDate: z.coerce.date(),
-      dueDate: z.coerce.date(),
-      amount: z.coerce.number().min(0).int(),
-      description: z.string().min(10),
-      status: z.string().optional(),
-      _action: z.enum(["add", "edit", "delete"]),
-    })
-    .refine((data) => data.dueDate > data.paymentDate, {
-      message: "Due date must be after payment date",
-      path: ["dueDate"],
-    });
+  const formSchema = z.object({
+    billId: z.string().cuid().optional(),
+    leaseId: z.string().cuid(),
+    dueDate: z.coerce.date(),
+    amount: z.coerce.number().min(0).int(),
+    description: z.string().min(10),
+    status: z.string().optional(),
+    _action: z.enum(["add", "edit", "delete"]),
+  });
 
   const validatedForm = formSchema.safeParse(parsedText);
 
@@ -129,7 +125,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     await prisma.billing.create({
       data: {
         leaseId: validatedData.leaseId,
-        paymentDate: validatedData.paymentDate,
         dueDate: validatedData.dueDate,
         amount: validatedData.amount,
         description: validatedData.description,
@@ -145,7 +140,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       },
       data: {
         leaseId: validatedData.leaseId,
-        paymentDate: validatedData.paymentDate,
         dueDate: validatedData.dueDate,
         amount: validatedData.amount,
         description: validatedData.description,
@@ -179,12 +173,12 @@ export default function AdminFinances() {
   const [addPaymentOpened, { open: openAddPayment, close: closeAddPayment }] =
     useDisclosure(false);
   const fetcher = useFetcher();
+  const apiFetcher = useFetcher();
 
   const handleDelete = (payment: SerializeFrom<BillingWithRelations>) => {
     const formData = {
       billId: payment.id,
       leaseId: payment.leaseId,
-      paymentDate: payment.paymentDate,
       dueDate: payment.dueDate,
       amount: payment.amount,
       description: payment.description,
@@ -193,6 +187,13 @@ export default function AdminFinances() {
     };
 
     fetcher.submit(formData, { method: "post" });
+  };
+
+  const handleClick = (billId: string) => {
+    apiFetcher.submit(
+      { billId },
+      { method: "post", action: "/api/notification" },
+    );
   };
 
   const openModal = (payment: SerializeFrom<BillingWithRelations>) =>
@@ -257,6 +258,15 @@ export default function AdminFinances() {
                 </Text>
               </Group>
 
+              <Group gap="xl" wrap="nowrap" style={{ flex: 1 }}>
+                <a
+                  href={`public/${bill.filepath}`}
+                  download="custom_filename.pdf"
+                >
+                  <Button>Download Attached</Button>
+                </a>
+              </Group>
+
               {/* Details Button */}
               <Button
                 variant="light"
@@ -267,7 +277,11 @@ export default function AdminFinances() {
               </Button>
 
               {/* Action Icon */}
-              <ActionIcon variant="subtle" color={dark ? "gray.4" : "gray.6"}>
+              <ActionIcon
+                variant="subtle"
+                color={dark ? "gray.4" : "gray.6"}
+                onClick={() => handleClick(bill.id)}
+              >
                 <IconBell size={18} />
               </ActionIcon>
             </Group>
@@ -293,12 +307,6 @@ export default function AdminFinances() {
             error={actionData?.errors?.fieldErrors.leaseId}
           />
           <SimpleGrid cols={3} my="md">
-            <DateInput
-              label="Payment Date"
-              name="paymentDate"
-              highlightToday
-              error={actionData?.errors?.fieldErrors.paymentDate}
-            />
             <DateInput
               label="Due Date"
               name="dueDate"
@@ -369,17 +377,6 @@ export default function AdminFinances() {
                 />
               </SimpleGrid>
               <SimpleGrid cols={3} my="md">
-                <DateInput
-                  label="Payment Date"
-                  name="paymentDate"
-                  highlightToday
-                  defaultValue={
-                    selectedPayment?.paymentDate
-                      ? new Date(selectedPayment?.paymentDate)
-                      : undefined
-                  }
-                  error={actionData?.errors?.fieldErrors.paymentDate}
-                />
                 <DateInput
                   label="Due Date"
                   name="dueDate"

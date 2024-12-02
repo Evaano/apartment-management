@@ -1,9 +1,14 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import {
+  LoaderFunctionArgs,
+  MetaFunction,
+  SerializeFrom,
+} from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { requireUserId } from "~/session.server";
-import { safeRedirect } from "~/utils";
+import { formatDate, safeRedirect } from "~/utils";
 
 import {
+  ActionIcon,
   Badge,
   Button,
   Flex,
@@ -19,6 +24,8 @@ import {
 import { MainContainer } from "~/components/main-container/main-container";
 import { Link, useLoaderData } from "@remix-run/react";
 import { prisma } from "~/db.server";
+import { IconBell } from "@tabler/icons-react";
+import { endOfMonth, startOfMonth } from "date-fns";
 
 export const meta: MetaFunction = () => [{ title: "User Management" }];
 
@@ -41,46 +48,93 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     },
   });
 
-  return { maintenanceRequests };
-};
+  const notifications = await prisma.notification.findMany({
+    where: {
+      userId,
+    },
+  });
 
-const NOTIFICATIONS = [
-  "Your rent payment is due in 5 days.",
-  "Maintenance request #1234 has been resolved.",
-  "Lease renewal is available starting next month.",
-];
+  const leaseInfo = await prisma.lease.findUnique({
+    where: {
+      deletedAt: null,
+      userId: userId,
+    },
+    include: {
+      user: true,
+    },
+  });
 
-const NEXT_PAYMENT = {
-  amount: "$1,200",
-  dueDate: "2024-12-01",
-  details: "Rent payment for December 2024.",
-};
+  if (!leaseInfo) {
+    throw new Response("Lease info not found", {
+      status: 404,
+    });
+  }
 
-const DUE_PAYMENTS = [
-  {
-    id: 1,
-    amount: "$1,200",
-    dueDate: "2024-11-25",
-    details: "Rent payment for November 2024.",
-  },
-  {
-    id: 2,
-    amount: "$100",
-    dueDate: "2024-11-20",
-    details: "Utility payment for October 2024.",
-  },
-];
+  const duePayments = await prisma.billing.findMany({
+    where: {
+      deletedAt: null,
+      leaseId: leaseInfo.id,
+      status: "pending",
+      dueDate: {
+        lt: new Date(),
+      },
+    },
+    orderBy: {
+      paymentDate: "desc",
+    },
+    include: {
+      lease: {
+        include: {
+          user: true,
+        },
+      },
+    },
+  });
 
-const LEASE_INFORMATION = {
-  leaseNumber: "LN-12345",
-  startDate: "2023-01-01",
-  endDate: "2025-12-31",
-  monthlyRent: "$1,200",
-  landlordName: "John Doe",
+  const startOfCurrentMonth = startOfMonth(new Date());
+  const endOfCurrentMonth = endOfMonth(new Date());
+
+  const nextPayment = await prisma.billing.findFirst({
+    where: {
+      deletedAt: null,
+      leaseId: leaseInfo.id,
+      status: "pending",
+      dueDate: {
+        gte: startOfCurrentMonth,
+        lte: endOfCurrentMonth,
+      },
+    },
+    orderBy: {
+      paymentDate: "desc",
+    },
+    include: {
+      lease: {
+        include: {
+          user: true,
+        },
+      },
+    },
+  });
+
+  console.log(nextPayment);
+
+  return {
+    maintenanceRequests,
+    notifications,
+    leaseInfo,
+    duePayments,
+    nextPayment,
+  };
 };
 
 export default function TenantsDashboard() {
-  const { maintenanceRequests } = useLoaderData<typeof loader>();
+  const {
+    maintenanceRequests,
+    notifications,
+    leaseInfo,
+    duePayments,
+    nextPayment,
+  } = useLoaderData<typeof loader>();
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
 
@@ -90,14 +144,40 @@ export default function TenantsDashboard() {
         {/* Notifications Section */}
         <Grid.Col span={{ base: 12, md: 3, lg: 3 }}>
           <Paper shadow="xs" p="md" mih={600} bg={dark ? "dark" : "gray.1"}>
-            <Title order={4} py="md">
+            <Title order={4} pb="md">
               Notifications
             </Title>
             <Paper shadow="xs" p="md">
-              {NOTIFICATIONS.map((notification, index) => (
-                <Text key={index}>{notification}</Text>
-              ))}
-              <Button variant="light" fullWidth mt="md">
+              <Stack gap="xs">
+                {notifications.map((bill) => (
+                  <Paper
+                    key={bill.id}
+                    withBorder
+                    p="sm"
+                    bg={dark ? "dark.6" : "gray.1"}
+                  >
+                    <Text size="sm" lineClamp={1} style={{ flex: 1 }}>
+                      Payment Description: {bill.details}
+                    </Text>
+
+                    <Text size="sm" lineClamp={1} style={{ flex: 1 }}>
+                      Amount: MVR {bill.amount}
+                    </Text>
+
+                    <Text size="sm" lineClamp={1} style={{ flex: 1 }}>
+                      Due: {formatDate(bill.dueDate)}
+                    </Text>
+                  </Paper>
+                ))}
+              </Stack>
+
+              <Button
+                variant="light"
+                fullWidth
+                mt="md"
+                component={Link}
+                to={"/tenants/rent"}
+              >
                 View
               </Button>
             </Paper>
@@ -121,19 +201,19 @@ export default function TenantsDashboard() {
                 }}
               >
                 <div>
-                  <Title order={4} py="md">
+                  <Title order={4} pb="md">
                     Due Payments
                   </Title>
                   <Paper shadow="xs" p="md">
-                    {DUE_PAYMENTS.map((payment) => (
+                    {duePayments.map((payment) => (
                       <Text key={payment.id}>
-                        {payment.details} - {payment.amount} (Due:{" "}
-                        {payment.dueDate})
+                        {payment.description} - MVR {payment.amount} (Due:{" "}
+                        {formatDate(payment.dueDate)})
                       </Text>
                     ))}
                   </Paper>
                 </div>
-                <Button fullWidth mt="md">
+                <Button fullWidth mt="md" component={Link} to={"/tenants/rent"}>
                   Pay
                 </Button>
               </Paper>
@@ -153,15 +233,27 @@ export default function TenantsDashboard() {
                 }}
               >
                 <div>
-                  <Title order={4} py="md">
+                  <Title order={4} pb="md">
                     Next Payment
                   </Title>
                   <Paper shadow="xs" p="md">
-                    {NEXT_PAYMENT.details} - {NEXT_PAYMENT.amount} (Due:{" "}
-                    {NEXT_PAYMENT.dueDate})
+                    {nextPayment?.description || ""}
+                    {nextPayment?.amount ? ` - MVR ${nextPayment.amount}` : ""}
+                    {nextPayment?.dueDate
+                      ? ` Due: ${new Date(
+                          nextPayment.dueDate,
+                        ).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: true,
+                        })}`
+                      : ""}
                   </Paper>
                 </div>
-                <Button fullWidth mt="md">
+                <Button fullWidth mt="md" component={Link} to={"/tenants/rent"}>
                   Pay
                 </Button>
               </Paper>
@@ -170,17 +262,28 @@ export default function TenantsDashboard() {
             {/* Lease Info */}
             <Grid.Col span={12}>
               <Paper shadow="xs" p="md" mih={285} bg={dark ? "dark" : "gray.1"}>
-                <Title order={4} py="md">
+                <Title order={4} pb="md">
                   Lease Info
                 </Title>
                 <Paper shadow="xs" p="md">
-                  <Text>Lease Number: {LEASE_INFORMATION.leaseNumber}</Text>
-                  <Text>
-                    Lease Term: {LEASE_INFORMATION.startDate} to{" "}
-                    {LEASE_INFORMATION.endDate}
-                  </Text>
-                  <Text>Monthly Rent: {LEASE_INFORMATION.monthlyRent}</Text>
-                  <Text>Landlord: {LEASE_INFORMATION.landlordName}</Text>
+                  <strong>Tenant Name:</strong> {leaseInfo.user?.name || "N/A"}
+                  <br />
+                  <strong>Property Address:</strong>{" "}
+                  {leaseInfo.propertyDetails || "N/A"}
+                  <br />
+                  <strong>Lease Term:</strong>{" "}
+                  {new Date(leaseInfo.startDate).toLocaleDateString()} to{" "}
+                  {new Date(leaseInfo.endDate).toLocaleDateString()}
+                  <br />
+                  <strong>Monthly Rent:</strong> $
+                  {leaseInfo.rentAmount.toLocaleString()}
+                  <br />
+                  <strong>Security Deposit:</strong> $
+                  {leaseInfo.securityDeposit.toLocaleString()}
+                  <br />
+                  <strong>Maintenance Fee:</strong> $
+                  {leaseInfo.maintenanceFee.toLocaleString()}
+                  <br />
                 </Paper>
               </Paper>
             </Grid.Col>
@@ -190,7 +293,7 @@ export default function TenantsDashboard() {
         {/* Maintenance Requests Section */}
         <Grid.Col span={{ base: 12, md: 3, lg: 3 }}>
           <Paper shadow="xs" p="md" mih={600} bg={dark ? "dark" : "gray.1"}>
-            <Title order={4} py="md">
+            <Title order={4} pb="md">
               Maintenance Requests
             </Title>
             <Stack pt={"md"}>
@@ -204,11 +307,11 @@ export default function TenantsDashboard() {
                           fullWidth
                           variant="light"
                           color={
-                            request.status === "Pending"
+                            request.status === "pending"
                               ? "yellow"
-                              : request.status === "Completed"
+                              : request.status === "completed"
                                 ? "green"
-                                : request.status === "In Progress"
+                                : request.status === "inprogress"
                                   ? "blue"
                                   : "gray"
                           }

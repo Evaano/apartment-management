@@ -2,8 +2,8 @@ import {
   LoaderFunctionArgs,
   MetaFunction,
   SerializeFrom,
+  redirect,
 } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
 import { requireUserId } from "~/session.server";
 import { safeRedirect } from "~/utils";
 
@@ -18,7 +18,6 @@ import {
   NumberInput,
   Paper,
   ScrollArea,
-  Select,
   SimpleGrid,
   Text,
   Textarea,
@@ -29,7 +28,7 @@ import {
 import { MainContainer } from "~/components/main-container/main-container";
 import { IconBell } from "@tabler/icons-react";
 import { BarChart, PieChart } from "@mantine/charts";
-import { Form, Link, useLoaderData } from "@remix-run/react";
+import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { prisma } from "~/db.server";
 import { DateInput } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
@@ -164,6 +163,7 @@ export default function AdminReports() {
   const [selectedPayment, setSelectedPayment] =
     useState<SerializeFrom<BillingWithRelations> | null>(null);
   const [opened, { open, close }] = useDisclosure(false);
+  const apiFetcher = useFetcher();
 
   const data = [
     { name: "Paid", value: paidBills, color: "yellow" },
@@ -173,6 +173,13 @@ export default function AdminReports() {
   const handleViewDetails = (payment: SerializeFrom<BillingWithRelations>) => {
     setSelectedPayment(payment);
     open();
+  };
+
+  const handleClick = (billId: string) => {
+    apiFetcher.submit(
+      { billId },
+      { method: "post", action: "/api/notification" },
+    );
   };
 
   return (
@@ -209,6 +216,7 @@ export default function AdminReports() {
                     <ActionIcon
                       variant="subtle"
                       color={dark ? "gray.4" : "gray.6"}
+                      onClick={() => handleClick(bill.id)}
                     >
                       <IconBell size={18} />
                     </ActionIcon>

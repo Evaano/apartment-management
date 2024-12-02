@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 async function seed() {
   // Cleanup existing data
   await prisma.maintenance.deleteMany();
+  await prisma.notification.deleteMany();
   await prisma.billing.deleteMany();
   await prisma.lease.deleteMany();
   await prisma.user.deleteMany();
