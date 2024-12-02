@@ -168,7 +168,11 @@ export default function AdminMaintenance() {
                   label="Status"
                   placeholder="Select Status"
                   defaultValue={selectedRequest.status}
-                  data={["Pending", "In Progress", "Completed"]}
+                  data={[
+                    { value: "pending", label: "Pending" },
+                    { value: "inprogress", label: "In Progress" },
+                    { value: "completed", label: "Completed" },
+                  ]}
                   name={"status"}
                   error={actionData?.errors?.fieldErrors.status}
                 />

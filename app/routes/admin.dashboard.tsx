@@ -1,7 +1,7 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { requireUserId } from "~/session.server";
-import { safeRedirect } from "~/utils";
+import { formatDate, safeRedirect } from "~/utils";
 
 import {
   Anchor,
@@ -55,26 +55,28 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     },
   });
 
-  return { maintenanceRequests, tenants };
+  const duePayments = await prisma.billing.findMany({
+    where: {
+      deletedAt: null,
+      dueDate: {
+        lt: new Date(),
+      },
+    },
+  });
+
+  const collectedPayments = await prisma.billing.findMany({
+    where: {
+      deletedAt: null,
+      status: "paid",
+    },
+  });
+
+  return { maintenanceRequests, tenants, duePayments, collectedPayments };
 };
 
-const DUE_PAYMENTS = [
-  {
-    id: 1,
-    amount: "$1,200",
-    dueDate: "2024-11-25",
-    details: "Rent payment for November 2024.",
-  },
-  {
-    id: 2,
-    amount: "$100",
-    dueDate: "2024-11-20",
-    details: "Utility payment for October 2024.",
-  },
-];
-
 export default function AdminDashboard() {
-  const { maintenanceRequests, tenants } = useLoaderData<typeof loader>();
+  const { maintenanceRequests, tenants, duePayments, collectedPayments } =
+    useLoaderData<typeof loader>();
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -124,10 +126,10 @@ export default function AdminDashboard() {
                     Due Payments
                   </Title>
                   <Paper shadow="xs" p="md">
-                    {DUE_PAYMENTS.map((payment) => (
+                    {duePayments.map((payment) => (
                       <Text key={payment.id}>
-                        {payment.details} - {payment.amount} (Due:{" "}
-                        {payment.dueDate})
+                        {payment.description} - MVR {payment.amount} (Due:{" "}
+                        {formatDate(payment.dueDate)})
                       </Text>
                     ))}
                   </Paper>
@@ -178,10 +180,10 @@ export default function AdminDashboard() {
                   Collected Payments
                 </Title>
                 <Paper shadow="xs" p="md">
-                  {DUE_PAYMENTS.map((payment) => (
+                  {collectedPayments.map((payment) => (
                     <Text key={payment.id}>
-                      {payment.details} - {payment.amount} (Due:{" "}
-                      {payment.dueDate})
+                      {payment.description} - MVR {payment.amount} (Due:{" "}
+                      {formatDate(payment.dueDate)})
                     </Text>
                   ))}
                 </Paper>
@@ -191,10 +193,10 @@ export default function AdminDashboard() {
                   Outstanding Payments
                 </Title>
                 <Paper shadow="xs" p="md">
-                  {DUE_PAYMENTS.map((payment) => (
+                  {duePayments.map((payment) => (
                     <Text key={payment.id}>
-                      {payment.details} - {payment.amount} (Due:{" "}
-                      {payment.dueDate})
+                      {payment.description} - MVR {payment.amount} (Due:{" "}
+                      {formatDate(payment.dueDate)})
                     </Text>
                   ))}
                 </Paper>
@@ -220,11 +222,11 @@ export default function AdminDashboard() {
                           fullWidth
                           variant="light"
                           color={
-                            request.status === "Pending"
+                            request.status === "pending"
                               ? "yellow"
-                              : request.status === "Completed"
+                              : request.status === "completed"
                                 ? "green"
-                                : request.status === "In Progress"
+                                : request.status === "inprogress"
                                   ? "blue"
                                   : "gray"
                           }
