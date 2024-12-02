@@ -271,7 +271,7 @@ export default function AdminReports() {
                     overflowY: "auto",
                   }}
                 >
-                  <ScrollArea h={400} scrollbarSize={7}>
+                  <ScrollArea h={100} scrollbarSize={7}>
                     {maintenanceRequests.map((request) => (
                       <Paper key={request.id} shadow="xs" p="md">
                         <Flex direction="row" justify="space-between">
