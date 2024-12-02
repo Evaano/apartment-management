@@ -9,9 +9,11 @@ import { safeRedirect } from "~/utils";
 
 import {
   ActionIcon,
+  Badge,
   Box,
   Button,
   Center,
+  Flex,
   Grid,
   Group,
   Modal,
@@ -269,11 +271,32 @@ export default function AdminReports() {
                     overflowY: "auto",
                   }}
                 >
-                  {maintenanceRequests.map((request) => (
-                    <Text key={request.id}>
-                      {request.details} - {request.status}
-                    </Text>
-                  ))}
+                  <ScrollArea h={400} scrollbarSize={7}>
+                    {maintenanceRequests.map((request) => (
+                      <Paper key={request.id} shadow="xs" p="md">
+                        <Flex direction="row" justify="space-between">
+                          <Text lineClamp={1}>{request.details}</Text>
+                          <Group justify="center">
+                            <Badge
+                              fullWidth
+                              variant="light"
+                              color={
+                                request.status === "pending"
+                                  ? "yellow"
+                                  : request.status === "completed"
+                                    ? "green"
+                                    : request.status === "inprogress"
+                                      ? "blue"
+                                      : "gray"
+                              }
+                            >
+                              {request.status}
+                            </Badge>
+                          </Group>
+                        </Flex>
+                      </Paper>
+                    ))}
+                  </ScrollArea>
                 </Paper>
                 <Button
                   fullWidth
