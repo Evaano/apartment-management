@@ -6,3 +6,4 @@ node_modules
 .yarn/install-state.gz
 .DS_Store
 /postgres-data
+/public/uploads

@@ -259,12 +259,11 @@ export default function AdminFinances() {
               </Group>
 
               <Group gap="xl" wrap="nowrap" style={{ flex: 1 }}>
-                <a
-                  href={`public/${bill.filepath}`}
-                  download="custom_filename.pdf"
-                >
-                  <Button>Download Attached</Button>
-                </a>
+                {bill.filepath && (
+                  <a href={`/${bill.filepath}`} download>
+                    <Button>Download Attached</Button>
+                  </a>
+                )}
               </Group>
 
               {/* Details Button */}

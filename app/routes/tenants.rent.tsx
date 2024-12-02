@@ -3,9 +3,9 @@ import {
   json,
   LoaderFunctionArgs,
   MetaFunction,
+  redirect,
   SerializeFrom,
 } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
 import { requireUserId } from "~/session.server";
 import { safeRedirect } from "~/utils";
 
@@ -141,7 +141,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   if (file && typeof file !== "string") {
     // Ensure that file is not null before accessing its properties
-    filePath = `/uploads/${file.name}`;
+    filePath = `public/uploads/${file.name}`;
   }
 
   await prisma.billing.update({

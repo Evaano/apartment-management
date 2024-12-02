@@ -89,25 +89,44 @@ async function seed() {
     console.log(`Dummy lease data created for test user: ${testUser.email}`);
 
     // Create dummy billing records for the lease
-    const billingRecords = [
+    const paidBills = [
       {
         leaseId: lease.id,
         amount: 1500,
         paymentDate: new Date("2024-05-01"),
         status: "paid",
         description: "Monthly Rent",
+        filepath: "public/uploads/upload_3268801201.pdf",
       },
     ];
 
-    const billingWithDueDates = billingRecords.map((record) => {
+    const billingWithDueDates = paidBills.map((record) => {
       const dueDate = new Date(record.paymentDate);
-      dueDate.setDate(dueDate.getDate() + 30); // Add 30 days to payment date for due date
+      dueDate.setDate(dueDate.getDate() + 30);
       return { ...record, dueDate };
     });
 
     // Insert billing records into the database
     await prisma.billing.createMany({
       data: billingWithDueDates,
+    });
+
+    const billingRecords = [
+      {
+        leaseId: lease.id,
+        amount: 1500,
+        status: "pending",
+        dueDate: new Date(),
+        description: "Monthly Rent",
+      },
+    ];
+
+    await prisma.billing.createMany({
+      data: billingWithDueDates,
+    });
+
+    await prisma.billing.createMany({
+      data: billingRecords,
     });
 
     console.log(`Billing records created for lease: ${lease.id}`);
