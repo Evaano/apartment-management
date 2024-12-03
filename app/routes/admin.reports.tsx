@@ -175,8 +175,8 @@ export default function AdminReports() {
   const apiFetcher = useFetcher();
 
   const data = [
-    { name: "Paid", value: paidBills, color: "yellow" },
-    { name: "Pending", value: pendingBills, color: "green" },
+    { name: "Paid", value: paidBills, color: "green" },
+    { name: "Pending", value: pendingBills, color: "yellow" },
   ];
 
   const handleViewDetails = (payment: SerializeFrom<BillingWithRelations>) => {
