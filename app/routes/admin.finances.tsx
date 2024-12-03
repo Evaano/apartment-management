@@ -121,6 +121,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const validatedData = validatedForm.data;
 
+  console.log(validatedData);
+
   if (validatedData._action === "add") {
     await prisma.billing.create({
       data: {
@@ -134,7 +136,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   if (validatedData._action === "edit") {
-    await prisma.billing.update({
+    const bill = await prisma.billing.update({
       where: {
         id: validatedData.billId,
       },
@@ -146,6 +148,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         status: validatedData.status,
       },
     });
+
+    console.log(bill);
   }
 
   if (validatedData._action === "delete") {

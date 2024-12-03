@@ -103,17 +103,16 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     },
   });
 
-  console.log(paidBills);
+  console.log(`Paid Bills: ${paidBills}`);
 
   const pendingBills = await prisma.billing.count({
     where: {
       deletedAt: null,
       status: "pending",
-      paymentDate: null,
     },
   });
 
-  console.log(pendingBills);
+  console.log(`Pending Bills: ${pendingBills}`);
 
   const getMaintenanceCountByMonth = async (month: number, status: string) => {
     const startDate = new Date(new Date().getFullYear(), month, 1);
